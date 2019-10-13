@@ -332,5 +332,19 @@ void Montador::calculaVelRodas(){
 }
 
 furgbol::io::F180SerialMessage Montador::createSerialMessage() {
-    return furgbol::io::F180SerialMessage();
+    calculaVelLinear();
+    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
+    float x_vel = robo->getVelocidade().x();
+    float y_vel = robo->getVelocidade().y();
+    float theta_vel = robo->getVelAngular();
+    furgbol::io::F180SerialMessage serial_message;
+    serial_message.setDirectionX((x_vel < 0) ? 1 : 3);
+    serial_message.setDirectionY((y_vel < 0) ? 1 : 3);
+    serial_message.setDirectionTheta((theta_vel < 0) ? 1 : 3);
+    serial_message.setVelocityX(static_cast<uint8_t>(127 * x_vel));
+    serial_message.setVelocityY(static_cast<uint8_t>(127 * y_vel));
+    serial_message.setVelocityTheta(static_cast<uint8_t>(127 * theta_vel));
+    serial_message.setKick(0);
+    serial_message.setDribbler(0);
+    return serial_message;
 }

@@ -169,7 +169,8 @@ void Agente::addPacoteBUS()
     switch(ConfigComunicacao::TIPO_ROBOS){
     case REAL:
         mBUS->lock();
-        bus->setPacoteRobo(id, montador.criaPacoteSerial());
+        // bus->setPacoteRobo(id, montador.criaPacoteSerial());
+        bus->setPacoteRobo(id, montador.createSerialMessage());
         mBUS->unlock();
         break;
 

@@ -1,6 +1,6 @@
 #include "Comunicador.h"
 
-Comunicador::Comunicador(){
+Comunicador::Comunicador() : serial_sender(ConfigComunicacao::DISPOSITIVO_SERIAL) {
 }
 
 void Comunicador::init(QMutex* _mBUS, CommunicationBUS * _bus)
@@ -11,15 +11,15 @@ void Comunicador::init(QMutex* _mBUS, CommunicationBUS * _bus)
     bus = _bus;
 
     /// verificando se iremos abrir um comunicação pela serial
-    switch(ConfigComunicacao::TIPO_ROBOS){
-    case REAL:
+//    switch(ConfigComunicacao::TIPO_ROBOS){
+//    case REAL:
+////        transSerial.setDispositivo(ConfigComunicacao::DISPOSITIVO_SERIAL);
+////        if(!transSerial.open()){
+////            cout << "Nao foi possivel abrir a porta pra comunicar com a serial" << endl;
+////        }
+////        break;
 
-        transSerial.setDispositivo(ConfigComunicacao::DISPOSITIVO_SERIAL);
-        if(!transSerial.open()){
-            cout << "Nao foi possivel abrir a porta pra comunicar com a serial" << endl;
-        }
-        break;
-    }
+//    }
 }
 
 void Comunicador::stop()
@@ -68,16 +68,24 @@ void Comunicador::run()
                 if(temporizador.getTempoPassado()-ultimoEnvioSerial > tempoEnvioSerial){
 
                     mBUS->lock();
-                    ProtocoloSerial* pacoteSerial = bus->getPacoteSerial(id); /// o devolvido é uma copia em formato de ponteiro, não é o endereço.
+                    // ProtocoloSerial* pacoteSerial = bus->getPacoteSerial(id); /// o devolvido é uma copia em formato de ponteiro, não é o endereço.
+                    furgbol::io::F180SerialMessage* serial_message = bus->getPacoteSerial(id);
                     mBUS->unlock();
-
                     passou=true;
-
-                    if(pacoteSerial != NULL){
+//                    if(pacoteSerial != NULL){
+//                        ultimoRoboEnviado = id;
+//                        ultimoEnvioSerial = temporizador.getTempoPassado();
+//                        send(*pacoteSerial);
+//                        delete pacoteSerial;
+//                        break;
+//                    }
+                    if (serial_message != nullptr) {
                         ultimoRoboEnviado = id;
                         ultimoEnvioSerial = temporizador.getTempoPassado();
-                        send(*pacoteSerial);
-                        delete pacoteSerial;
+                        std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VAI ENVIAR" << std::endl;
+                        send(*serial_message);
+                        std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ENVIOU" << std::endl;
+                        delete serial_message;
                         break;
                     }
                 }
@@ -151,4 +159,13 @@ void Comunicador::send(const ProtocoloSerial& _pacoteRobo)
     if(!transSerial.write(_pacoteRobo)){
         cout << "Comunicador não conseguiu escrever na serial" << endl;
     }
+}
+
+void Comunicador::send(furgbol::io::F180SerialMessage& serial_message) {
+    std::vector<uint8_t> buffer(9);
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VAI SERIALIZAR" << std::endl;
+    serial_message.serialize(buffer);
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< SERIALIZOU" << std::endl;
+    serial_sender.send(buffer);
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ENVIOU REAL" << std::endl;
 }

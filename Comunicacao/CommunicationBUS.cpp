@@ -1,6 +1,6 @@
 #include "CommunicationBUS.h"
 
-CommunicationBUS::CommunicationBUS()
+CommunicationBUS::CommunicationBUS() : serial_messages(NUM_MAX_ROBOS)
 {
     pacoteIaMonitorador = NULL;
     pacoteSerial.resize(NUM_MAX_ROBOS,NULL);
@@ -45,18 +45,30 @@ void CommunicationBUS::carregaPacoteMonitorador(const AIDataManagerPackage &_pac
     *pacoteIaMonitorador = _pacoteIaMonitorador;
 }
 
-ProtocoloSerial* CommunicationBUS::getPacoteSerial(int id)
+//ProtocoloSerial* CommunicationBUS::getPacoteSerial(int id)
+//{
+//    ProtocoloSerial* pacote = NULL;   /// aloca um espaco para o pacote a ser retirado do buffer
+
+//    if( pacoteSerial[id] != NULL){    /// se o pacote nao for nulo retira do buffer realmete ( delta)
+//        pacote = new ProtocoloSerial;
+//        *pacote = *pacoteSerial[id];
+//        delete pacoteSerial[id];
+//        pacoteSerial[id] = NULL;
+//    }
+
+//    return pacote;
+//}
+
+furgbol::io::F180SerialMessage* CommunicationBUS::getPacoteSerial(size_t id)
 {
-    ProtocoloSerial* pacote = NULL;   /// aloca um espaco para o pacote a ser retirado do buffer
-
-    if( pacoteSerial[id] != NULL){    /// se o pacote nao for nulo retira do buffer realmete ( delta)
-        pacote = new ProtocoloSerial;
-        *pacote = *pacoteSerial[id];
-        delete pacoteSerial[id];
-        pacoteSerial[id] = NULL;
+    furgbol::io::F180SerialMessage* message = nullptr;
+    if (serial_messages[id] != nullptr) {
+        message = new furgbol::io::F180SerialMessage;
+        *message = *serial_messages[id];
+        delete serial_messages[id];
+        serial_messages[id] = nullptr;
     }
-
-    return pacote;
+    return message;
 }
 
 grSim_Packet* CommunicationBUS::getPacoteSimulador(int id)
@@ -87,4 +99,10 @@ AIDataManagerPackage* CommunicationBUS::getPacoteMonitorador()
     }
 
     return pacote;
+}
+
+void CommunicationBUS::setPacoteRobo(size_t id, furgbol::io::F180SerialMessage message)
+{
+    serial_messages[id] = new furgbol::io::F180SerialMessage;
+    *serial_messages[id] = message;
 }
