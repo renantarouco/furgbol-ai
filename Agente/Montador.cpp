@@ -331,38 +331,6 @@ void Montador::calculaVelRodas(){
     //                ajustaVelocidades();
 }
 
-//float Montador::calculaVelAngular(Ponto alvoFinal, Ponto posRobo, Vetor orientacao, Vetor direcao)
-//{
-//    float distanciaAlvo = sqrt(squared_distance(alvoFinal, posRobo));
-
-//    float res = produtoVetorial2D(orientacao,direcao);
-
-//    float denomidador = sqrt(orientacao.squared_length())*sqrt(direcao.squared_length());
-//    float theta;
-//    if (denomidador != 0){
-//        theta= asin(fabs(res)/denomidador);
-//    }else{
-//        theta = 0;
-//    }
-
-//    float velAngular = 0.0;
-
-//    if(distanciaAlvo < 800){
-
-//        velAngular =  Pgiro*theta;
-//        if(velAngular > MAX_VEL_ANGULAR){
-//            velAngular = MAX_VEL_ANGULAR;
-//        }else{
-//            if (velAngular < MIN_VEL_ANGULAR){
-//                velAngular =MIN_VEL_ANGULAR;
-
-//                //cout << " SETOU VELOCIDADE MINIMA DE GIRO" << endl;
-//            }
-//        }
-//        if(res < 0){
-//            velAngular =  -velAngular;
-//        }
-//    }
-
-//    return velAngular;
-//}
+furgbol::io::F180SerialMessage Montador::createSerialMessage() {
+    return furgbol::io::F180SerialMessage();
+}

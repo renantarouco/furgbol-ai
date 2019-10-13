@@ -2,9 +2,10 @@
 #define MONTADOR_H
 
 #include <opencv/cv.h>
+#include <furgbol-core/io/f180_serial_message.h>
+#include <grSim-proto/grSim_Packet.pb.h>
 
 #include <ProtocoloSerial.h>
-#include <grSim_Packet.pb.h>
 #include <Relogio.h>
 #include <ConfigComunicacao.h>
 #include <ConfigMontador.h>
@@ -18,7 +19,6 @@ class Montador
 private:
     /// pacotes usados para nos comunicar com os robos
     ProtocoloSerial pacoteSerial;
-
     /**
       O modelo cinamatico esta associado a uma equação que permite
       decompor a velocidade do robo a partir de um sistema de cordenadas
@@ -66,37 +66,24 @@ private:
     */
     void inicializaModeloCinematico2014();
     void inicializaModeloCinematico();
-
     cv::Mat_<float> pInvM;
     cv::Mat_<float> M;
     cv::Mat_<float> R;
     cv::Mat_<float> velRodas;
     int id;
-
     Relogio tempo;
     bool enableChute;
     float thetaAnterior;
-
 public:
+    double vel_atual, vel_ant;
+    double velAngularAtual;
     Montador();
-
     void setId(int _id);
-
-    //    void calculaVelSemControle();
-    //    void calculaVelControleSKUBA_new();
-    //    void calculaVelControleSKUBA();
-    //    void calculaVelControleP();
-
     void calculaVelLinear();
     void calculaVelRodas();
-
-    //    void calculaVelRodasAdv(int _id);
-    //    void ajustaVelocidades();
-
     ProtocoloSerial criaPacoteSerial();
     grSim_Packet criaPacoteGrSim();
 
-    double vel_atual, vel_ant;
-    double velAngularAtual;
+    furgbol::io::F180SerialMessage createSerialMessage();
 };
 #endif

@@ -89,7 +89,7 @@ struct Address {
 };
 
 /// DEFINIÇÕES GERAIS
-const string PATH_CONFIG = "../ai/config/";
+const string PATH_CONFIG = "../furgbol-ai/config/";
 const int NUM_MAX_ROBOS = 12;
 const int NUM_MAX_ROBOS_JOGANDO = 6;
 

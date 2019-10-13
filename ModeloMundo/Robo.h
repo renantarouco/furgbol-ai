@@ -1,9 +1,10 @@
 #ifndef ROBO_H
 #define ROBO_H
 
+#include <furgbol-core/proto/messages_ai_2Dsimulator.pb.h>
+
 #include "Comando.h"
 #include "Tatica.h"
-#include "messages_ai_2Dsimulator.pb.h"
 
 const int RAIO_ROBO=90; /// raio maximo do robo.
 

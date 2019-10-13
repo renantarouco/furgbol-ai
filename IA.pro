@@ -5,10 +5,11 @@
 #-------------------------------------------------
 
 QT += core gui network
-QT += network
-
-TARGET = IA
 TEMPLATE = app
+
+TARGET = ai
+
+INCLUDEPATH +=  ../furgbol-core/include
 
 INCLUDEPATH += Utils \
     Sistema \
@@ -24,7 +25,6 @@ INCLUDEPATH += Utils \
     Agente/Navegador \
     ModeloMundo \
     Geometria
-INCLUDEPATH +=  ../proto-lib
 
 HEADERS += \
     Agente/Comando.h \
@@ -188,10 +188,9 @@ SOURCES += main.cpp \
     Agente/Taticas/MarcarAreaAdv.cpp
 
 CONFIG   += console link_pkgconfig
-
 PKGCONFIG += opencv
 QMAKE_CXXFLAGS += -O3 -frounding-math
 
-LIBS += -lboost_system -lboost_thread -lprotobuf
-LIBS += -L../CGAL-4.13.1/lib -lCGAL
-LIBS += -L../proto-lib -lproto
+LIBS += -lboost_system -lboost_thread -lprotobuf -lCGAL
+LIBS += -L../CGAL-4.13.1/lib
+LIBS += -L../furgbol-core/lib -lssl-vision-proto -lssl-refbox-proto -lgrSim-proto -lfurgbol-proto -lfurgbol-core-io

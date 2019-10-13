@@ -1,11 +1,12 @@
 #ifndef SISTEMA_H
 #define SISTEMA_H
 
+#include <furgbol-core/proto/messages_ai_2Dsimulator.pb.h>
+
 #include "GerenteDeliberativoCentral.h"
 #include "Agente.h"
 #include "Avaliador.h"
 #include "CommunicationBUS.h"
-#include "messages_ai_2Dsimulator.pb.h"
 #include "Relogio.h"
 #include "ModeloMundo.h"
 #include "DefendePonto.h"
