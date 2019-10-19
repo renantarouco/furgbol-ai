@@ -1,6 +1,8 @@
 #ifndef AGENTE_H
 #define AGENTE_H
 
+#include <memory>
+
 #include <AvaliadorRobo.h>
 #include "CommunicationBUS.h"
 #include <Tatica.h>
@@ -8,6 +10,8 @@
 #include <Comunicador.h>
 #include <ProtocoloSerial.h>
 #include <Navegador.h>
+
+#include "serial_repository.h"
 
 /**
  * Classe que guarda as informações de um processo referente a um robô.
@@ -22,6 +26,7 @@ protected:
     unsigned int id;
     QMutex* mBUS;
     CommunicationBUS* bus;
+    std::shared_ptr<SerialRepository> serial_repo_;
     int iteracoes;
     vector<Tatica*> filaTaticasPen;
     unsigned int posFila; /// Especifica a posicao atual sendo utilizada na fila de taticas pendentes
@@ -32,7 +37,7 @@ protected:
 public:
     Agente();
     ~Agente();
-    void init(int _id, QMutex* _mBUS, CommunicationBUS* _bus);
+    void init(int _id, QMutex* _mBUS, CommunicationBUS* _bus, std::shared_ptr<SerialRepository>);
     unsigned int getId();
     void executarTatica();
     bool atualizarTatica();

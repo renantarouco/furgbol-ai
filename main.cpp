@@ -1,9 +1,18 @@
+#include <iostream>
+#include <thread>
+#include <chrono>
+
 #include <QCoreApplication>
 #include "Sistema.h"
 #include "Comunicador.h"
 #include "Carregador.h"
 
-int main(int argc, char *argv[])
+#include <furgbol-core/io/serial_writer.h>
+
+//#include "f180_serial_package.h"
+//#include "serial_repository.h"
+
+int main(int argc, char* argv[])
 {
     QCoreApplication a(argc, argv);
 
@@ -18,13 +27,14 @@ int main(int argc, char *argv[])
     /// variáveis utilizadas na IA
     QMutex mBUS; ///< Mutex para controlar o acesso ao objeto communcation bus
     CommunicationBUS bus; /// barramento utilizado na comunicação entre a thread principal e a de comunicacao;
+    std::shared_ptr<SerialRepository> serial_repo = std::make_shared<SerialRepository>(6);
 
     /// iniciando a thread do Sistema
     Sistema sistema;
-    sistema.init(&mBUS, &bus);
+    sistema.init(&mBUS, &bus, serial_repo);
     sistema.start();
 
-    /// iniciando a thread do comunicador que é aonde iremos enviar os pacotes para os robos ou simuladores
+//    /// iniciando a thread do comunicador que é aonde iremos enviar os pacotes para os robos ou simuladores
     Comunicador comunicador;
     comunicador.init(&mBUS, &bus);
     comunicador.start();
@@ -34,7 +44,7 @@ int main(int argc, char *argv[])
 
     /// parando as threads
     sistema.stop();
-    comunicador.stop();
+    //comunicador.stop();
 
     return 0;
 }

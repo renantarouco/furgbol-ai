@@ -9,11 +9,38 @@ TEMPLATE = app
 
 TARGET = ai
 
-INCLUDEPATH +=  ../furgbol-core/include
+INCLUDEPATH +=  ../furgbol-core/dist/include
+
+INCLUDEPATH += \
+  ext/json/single_include \
+
+HEADERS += \
+  communication/f180_serial_package.h \
+  communication/serial_repository.h \
+  communication/grsim_repository.h \
+  communication/monitor_repository.h \
+  communication/serial_communicator.h \
+  communication/grsim_communicator.h \
+  communication/monitor_communicator.h \
+  configuration/configuration.h \
+  utils/utils.h \
+  system/system.h
+
+SOURCES += main.cpp \
+  communication/f180_serial_package.cpp \
+  communication/serial_repository.cpp \
+  communication/grsim_repository.cpp \
+  communication/monitor_repository.cpp \
+  communication/serial_communicator.cpp \
+  communication/grsim_communicator.cpp \
+  communication/monitor_communicator.cpp \
+  configuration/configuration.cpp \
+  system/system.cpp
+
 
 INCLUDEPATH += Utils \
     Sistema \
-    Sistema/Configuração \
+    Sistema/Configuracao \
     Sistema/Barramentos \
     Agente \
     Agente/Taticas \
@@ -35,7 +62,6 @@ HEADERS += \
     Agente/Maquinas/MaquinaSkills.h \
     Agente/Maquinas/DefendePonto.h \
     Agente/Maquinas/DadosSensoriais.h \
-   # Agente/Navegador/Obstaculo.h \
     Agente/Navegador/Navegador.h \
     Agente/Navegador/KDTree.h \
     Agente/Navegador/KDNodo.h \
@@ -80,14 +106,12 @@ HEADERS += \
     Comunicacao/ProtocoloSerial.h \
     Comunicacao/Comunicador.h \
     Comunicacao/CommunicationBUS.h \
-#    Comunicacao/IAMonitorador.h \
     GDC/Seletor.h \
     GDC/Jogada.h \
     GDC/GerenteDeliberativoCentral.h \
     GDC/Executor.h \
     GDC/Carregador.h \
     Geometria/Poligono.h \
-    #Geometria/ObstaculoBola.h \
     Geometria/Geometria.h \
     Geometria/Circulo.h \
     Geometria/Campo.h \
@@ -96,18 +120,18 @@ HEADERS += \
     ModeloMundo/ModeloMundo.h \
     ModeloMundo/Bola.h \
     Sistema/Sistema.h \
-    Sistema/Configuração/ConfigTeste.h \
-    Sistema/Configuração/ConfigMontador.h \
-    Sistema/Configuração/ConfigComunicacao.h \
-    Sistema/Configuração/ConfigAvaliador.h \
-    Sistema/Configuração/Config.h \
+    Sistema/Configuracao/ConfigTeste.h \
+    Sistema/Configuracao/ConfigMontador.h \
+    Sistema/Configuracao/ConfigComunicacao.h \
+    Sistema/Configuracao/ConfigAvaliador.h \
+    Sistema/Configuracao/Config.h \
     Utils/Relogio.h \
     Utils/Definitions.h \
     Agente/Taticas/DefesaCirculo.h \
     Agente/Taticas/DefesaArea.h \
     Agente/Taticas/MarcarAreaAdv.h
 
-SOURCES += main.cpp \
+SOURCES += \
     Agente/Comando.cpp \
     Agente/Montador.cpp \
     Agente/Agente.cpp \
@@ -116,7 +140,6 @@ SOURCES += main.cpp \
     Agente/Maquinas/MaquinaSkills.cpp \
     Agente/Maquinas/DefendePonto.cpp \
     Agente/Maquinas/DadosSensoriais.cpp \
-    #Agente/Navegador/Obstaculo.cpp \
     Agente/Navegador/Navegador.cpp \
     Agente/Navegador/KDTree.cpp \
     Agente/Navegador/KDNodo.cpp \
@@ -161,14 +184,12 @@ SOURCES += main.cpp \
     Comunicacao/ProtocoloSerial.cpp \
     Comunicacao/Comunicador.cpp \
     Comunicacao/CommunicationBUS.cpp \
-#    Comunicacao/IAMonitorador.cpp \
     GDC/Seletor.cpp \
     GDC/Jogada.cpp \
     GDC/GerenteDeliberativoCentral.cpp \
     GDC/Executor.cpp \
     GDC/Carregador.cpp \
     Geometria/Poligono.cpp \
-    #Geometria/ObstaculoBola.cpp \
     Geometria/Geometria.cpp \
     Geometria/Circulo.cpp \
     Geometria/Campo.cpp \
@@ -177,20 +198,22 @@ SOURCES += main.cpp \
     ModeloMundo/ModeloMundo.cpp \
     ModeloMundo/Bola.cpp \
     Sistema/Sistema.cpp \
-    Sistema/Configuração/ConfigTeste.cpp \
-    Sistema/Configuração/ConfigMontador.cpp \
-    Sistema/Configuração/ConfigComunicacao.cpp \
-    Sistema/Configuração/ConfigAvaliador.cpp \
-    Sistema/Configuração/Config.cpp \
+    Sistema/Configuracao/ConfigTeste.cpp \
+    Sistema/Configuracao/ConfigMontador.cpp \
+    Sistema/Configuracao/ConfigComunicacao.cpp \
+    Sistema/Configuracao/ConfigAvaliador.cpp \
+    Sistema/Configuracao/Config.cpp \
     Utils/Relogio.cpp \
     Agente/Taticas/DefesaCirculo.cpp \
     Agente/Taticas/DefesaArea.cpp \
     Agente/Taticas/MarcarAreaAdv.cpp
 
+RESOURCES += \
+    resources/resources.qrc
+
 CONFIG   += console link_pkgconfig
 PKGCONFIG += opencv
 QMAKE_CXXFLAGS += -O3 -frounding-math
 
-LIBS += -lboost_system -lboost_thread -lprotobuf -lCGAL
-LIBS += -L../CGAL-4.13.1/lib
-LIBS += -L../furgbol-core/lib -lssl-vision-proto -lssl-refbox-proto -lgrSim-proto -lfurgbol-proto -lfurgbol-core-io
+LIBS += -lboost_system -lboost_thread -lprotobuf -lCGAL -lserial
+LIBS += -L../furgbol-core/dist/lib -lssl-vision-proto -lssl-refbox-proto -lgrSim-proto -lfurgbol-proto -lfurgbol-core-io

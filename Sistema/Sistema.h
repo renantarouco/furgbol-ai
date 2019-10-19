@@ -1,6 +1,8 @@
 #ifndef SISTEMA_H
 #define SISTEMA_H
 
+#include <memory>
+
 #include <furgbol-core/proto/messages_ai_2Dsimulator.pb.h>
 
 #include "GerenteDeliberativoCentral.h"
@@ -15,6 +17,8 @@
 #include "Definitions.h"
 
 #include <QUdpSocket>
+
+#include "serial_repository.h"
 
 /*!
  * Classe que controla a execução do programa através de comandos da interface
@@ -44,6 +48,7 @@ private:
     DataPackage pacoteGD;
     QByteArray datagram;
 
+    std::shared_ptr<SerialRepository> serial_repo_;
 public slots:
     void processPacotes();
 
@@ -51,7 +56,7 @@ public:
     Sistema();
     ~Sistema();
 
-    void init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao);
+    void init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao, std::shared_ptr<SerialRepository>);
 
     void stop();
 

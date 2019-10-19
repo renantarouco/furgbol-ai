@@ -39,6 +39,7 @@ void Config::load(string pathConfig){
 
     MODO_TESTE = settings.value("modo_teste").toBool();
     JOGADA_TESTE = settings.value("jogada_teste").toString().toStdString();
+    std::cout << path.toStdString() << std::endl;
     PATH_PLAYBOOK = settings.value("path_playbook").toString().toStdString();
     PATH_PLAYBOOK_TESTE = settings.value("path_playbook_testes").toString().toStdString();
 

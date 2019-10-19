@@ -1,6 +1,6 @@
 #include "CommunicationBUS.h"
 
-CommunicationBUS::CommunicationBUS() : serial_messages(NUM_MAX_ROBOS)
+CommunicationBUS::CommunicationBUS() //: serial_messages(NUM_MAX_ROBOS)
 {
     pacoteIaMonitorador = NULL;
     pacoteSerial.resize(NUM_MAX_ROBOS,NULL);
@@ -59,17 +59,17 @@ void CommunicationBUS::carregaPacoteMonitorador(const AIDataManagerPackage &_pac
 //    return pacote;
 //}
 
-furgbol::io::F180SerialMessage* CommunicationBUS::getPacoteSerial(size_t id)
-{
-    furgbol::io::F180SerialMessage* message = nullptr;
-    if (serial_messages[id] != nullptr) {
-        message = new furgbol::io::F180SerialMessage;
-        *message = *serial_messages[id];
-        delete serial_messages[id];
-        serial_messages[id] = nullptr;
-    }
-    return message;
-}
+//furgbol::io::F180SerialMessage* CommunicationBUS::getPacoteSerial(size_t id)
+//{
+//    furgbol::io::F180SerialMessage* message = nullptr;
+//    if (serial_messages[id] != nullptr) {
+//        message = new furgbol::io::F180SerialMessage;
+//        *message = *serial_messages[id];
+//        delete serial_messages[id];
+//        serial_messages[id] = nullptr;
+//    }
+//    return message;
+//}
 
 grSim_Packet* CommunicationBUS::getPacoteSimulador(int id)
 {
@@ -101,8 +101,8 @@ AIDataManagerPackage* CommunicationBUS::getPacoteMonitorador()
     return pacote;
 }
 
-void CommunicationBUS::setPacoteRobo(size_t id, furgbol::io::F180SerialMessage message)
-{
-    serial_messages[id] = new furgbol::io::F180SerialMessage;
-    *serial_messages[id] = message;
-}
+//void CommunicationBUS::setPacoteRobo(size_t id, furgbol::io::F180SerialMessage message)
+//{
+//    serial_messages[id] = new furgbol::io::F180SerialMessage;
+//    *serial_messages[id] = message;
+//}

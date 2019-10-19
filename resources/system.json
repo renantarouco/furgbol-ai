@@ -1,0 +1,18 @@
+{
+    "system": {
+        "max_robots": 6,
+        "robots_type": 1
+    },
+    "serial": {
+        "port": "/dev/ttyACM0",
+        "package_size": 9
+    },
+    "grSim": {
+        "ip": "10.224.23.2",
+        "port": 10006
+    },
+    "monitor": {
+        "ip": "10.224.23.1",
+        "port": 5678
+    }
+}

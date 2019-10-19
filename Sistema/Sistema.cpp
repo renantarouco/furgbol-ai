@@ -15,13 +15,14 @@ Sistema::~Sistema()
     cout << "FINALIZANDO SISTEMA" << endl;
 }
 
-void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao)
+void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao, std::shared_ptr<SerialRepository> serial_repo)
 {
     cout << "INICIANDO SISTEMA" << endl;
 
     numAgentesAtivos = 0;
     mBUS = _mBUS;
     bus = _barramentoComunicacao;
+    serial_repo_ = serial_repo;
 
     /// iniciando modelo de mundo
     modeloMundo.init();
@@ -35,10 +36,11 @@ void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao)
     connect(&r_udpSocket, SIGNAL(readyRead()), this, SLOT(processPacotes()));
 
     /// Variavel que ira indicar as constantes que serao usadas para calcular a velocidade dos robos
-    cout << "INICIANDO AGENTES" << endl;
     agentes.resize(NUM_MAX_ROBOS);
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
-        agentes[id].init(id, mBUS, bus);
+    cout << "INICIANDO AGENTES" << endl;
+    for(int id=0; id<NUM_MAX_ROBOS; id++) {
+        agentes[id].init(id, mBUS, bus, serial_repo_);
+        cout << "AGENTE INICIADO " << id << endl;
     }
 }
 
@@ -51,45 +53,20 @@ void Sistema::stop()
 }
 
 void Sistema::tratarPacoteRecebido(){
-    cout << "tratando pacote recebido" << endl;
-
-    /// verificando se tem datagram pendente
     if (r_udpSocket.hasPendingDatagrams()) {
-
-        printf("Trantando pacote recebido....\n");
-
-        /// lendo o pacote
         datagram.clear();
         datagram.resize(r_udpSocket.pendingDatagramSize());
         r_udpSocket.readDatagram(datagram.data(), datagram.size());
-
-        /// verificando qual foi o pacote que foi recebido
-        if(ConfigComunicacao::TIPO_ROBOS == REAL || ConfigComunicacao::TIPO_ROBOS == SIMULADOR3D){
-
-            printf("Pacote do Gerente de Dados...\n");
-
-//            printf("%s\n", pacoteGD.DebugString().c_str());
-
-            pacoteGD.ParseFromArray(datagram.data(), datagram.size());
-            modeloMundo.coletaDados(pacoteGD);
-
-            /// coletando os dados dos robos do simulador3D
-        }else if(ConfigComunicacao::TIPO_ROBOS == SIMULADOR2D){
-            //            printf("Pacote do Simulador2D...\n");
-
-            pacoteSimulador2D.ParseFromArray(datagram.data(), datagram.size());
-            modeloMundo.coletaDados(pacoteSimulador2D);
-        }
+        pacoteGD.ParseFromArray(datagram.data(), datagram.size());
+        modeloMundo.coletaDados(pacoteGD);
     }
-
-    cout << "finalizado com sucesso...." << endl;
 }
 
 void Sistema::processPacotes(){
 
-    cout << "carregando constantes....." << endl;
-    Config::load();
-    cout << "finalizado...." << endl;
+//    cout << "carregando constantes....." << endl;
+//    Config::load();
+//    cout << "finalizado...." << endl;
 
     /// função que trata o pacote recebido e seta os valores que foram recebidos nas respectivas variáveis
     tratarPacoteRecebido();
@@ -203,7 +180,6 @@ void Sistema::addPacoteMonitoradorBUS(){
 void Sistema::run()
 {
     cout << "STARTING SISTEMA" << endl;
-
     iteracao = 1;
 
     /// executando o loop da thread

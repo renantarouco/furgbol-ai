@@ -19,23 +19,24 @@ ProtocoloSerial::ProtocoloSerial(): velocidadePercentualRodas(4,0) , direcaoRoda
 
  */
 void ProtocoloSerial::setId(unsigned char _id){
-    switch(_id){
-    case 0:
-        id = 128;
-        break;
-    case    1:
-        id = 129;
-        break;
-    case 2:
-        id = 130;
-        break;
-    case 3:
-        id = 131;
-        break;
-    case 4:
-        id = 132;
-        break;
-    }
+//    switch(_id){
+//    case 0:
+//        id = 128;
+//        break;
+//    case 1:
+//        id = 129;
+//        break;
+//    case 2:
+//        id = 130;
+//        break;
+//    case 3:
+//        id = 131;
+//        break;
+//    case 4:
+//        id = 132;
+//        break;
+//    }
+    id = _id + 128;
 
     /// TODO Colocar os outros ids
 }
@@ -176,64 +177,72 @@ void ProtocoloSerial::setEnableChute(bool _enable){
 \return dados serializados.
 */
 void  ProtocoloSerial::serializa(vector <unsigned char> &buffer) const{
-
-    printData();
-
-    fill(buffer.begin(), buffer.end(), 0);
-
     buffer[0] = id;
+    buffer[1] = velocity_x_;
+    buffer[2] = velocity_y_;
+    buffer[3] = velocity_theta_;
+    buffer[4] = direction_x_;
+    buffer[5] = direction_y_;
+    buffer[6] = direction_theta_;
+    buffer[7] = dribbler_;
+    buffer[8] = kick_;
+//    printData();
 
-    for(int i=1;i<=4;i++)
-    {
-        buffer[i] = velocidadePercentualRodas[i-1];
-        //        if(buffer[i]==10)
-        //            buffer[i] = 9;
-    }
+//    fill(buffer.begin(), buffer.end(), 0);
 
-    // O robo nao pode chutar com o driblador ligado!! Risco de queimar o drible
-    if(enableDrible && !enableChute)
-    {
-        buffer[5] = 70;
-    }
-    else
-    {
-        buffer[5] = 0;
-    }
+//    buffer[0] = id;
+
+//    for(int i=1;i<=4;i++)
+//    {
+//        buffer[i] = velocidadePercentualRodas[i-1];
+//        //        if(buffer[i]==10)
+//        //            buffer[i] = 9;
+//    }
+
+//    // O robo nao pode chutar com o driblador ligado!! Risco de queimar o drible
+//    if(enableDrible && !enableChute)
+//    {
+//        buffer[5] = 70;
+//    }
+//    else
+//    {
+//        buffer[5] = 0;
+//    }
 
 
-    //    bitsChute = 0;
-    //    Direcao dir;
-    //    // Adaptado temporariamente
-    //    if(tipoChute==Comando::SEM_CHUTE){
-    //        buffer[5] = 0;
-    //    }else if(tipoChute==Comando::CHUTE_BAIXO){
-    //        buffer[5] = 50;
-    //        dir = HORARIO;
-    //    }else if(tipoChute==Comando::CHUTE_ALTO){
-    //        buffer[5] = 50;
-    //        dir = HORARIO;
-    //    }
+//    //    bitsChute = 0;
+//    //    Direcao dir;
+//    //    // Adaptado temporariamente
+//    //    if(tipoChute==Comando::SEM_CHUTE){
+//    //        buffer[5] = 0;
+//    //    }else if(tipoChute==Comando::CHUTE_BAIXO){
+//    //        buffer[5] = 50;
+//    //        dir = HORARIO;
+//    //    }else if(tipoChute==Comando::CHUTE_ALTO){
+//    //        buffer[5] = 50;
+//    //        dir = HORARIO;
+//    //    }
 
-    //    cout << "Drible = "<< direcaoDriblador << " e " << enableDrible << " chute " << (unsigned)enableChute <<  endl;
+//    //    cout << "Drible = "<< direcaoDriblador << " e " << enableDrible << " chute " << (unsigned)enableChute <<  endl;
 
-    //! O byte de direção tera a seguinte configuração =|_ |_ |_ |dirDri |dir3 |dir2 |dir1 |dir0|
-    buffer[6] = 0;
-    //    buffer[6] = dir << 4 | direcaoRodas[3] << 3 | direcaoRodas[2] << 2 | direcaoRodas[1] << 1 | direcaoRodas[0];
-    buffer[6] = direcaoDriblador << 4 | direcaoRodas[3] << 3 | direcaoRodas[2] << 2 | direcaoRodas[1] << 1 | direcaoRodas[0];
+//    //! O byte de direção tera a seguinte configuração =|_ |_ |_ |dirDri |dir3 |dir2 |dir1 |dir0|
+//    buffer[6] = 0;
+//    //    buffer[6] = dir << 4 | direcaoRodas[3] << 3 | direcaoRodas[2] << 2 | direcaoRodas[1] << 1 | direcaoRodas[0];
+//    buffer[6] = direcaoDriblador << 4 | direcaoRodas[3] << 3 | direcaoRodas[2] << 2 | direcaoRodas[1] << 1 | direcaoRodas[0];
 
-    unsigned char bitsChute;
-    if(tipoChute==Comando::SEM_CHUTE){
-        bitsChute = 0;
-    }else if(tipoChute==Comando::CHUTE_BAIXO){
-        bitsChute =  2;
-    }else if(tipoChute==Comando::CHUTE_ALTO){
-        bitsChute = 3;
-    }
+//    unsigned char bitsChute;
+//    if(tipoChute==Comando::SEM_CHUTE){
+//        bitsChute = 0;
+//    }else if(tipoChute==Comando::CHUTE_BAIXO){
+//        bitsChute =  2;
+//    }else if(tipoChute==Comando::CHUTE_ALTO){
+//        bitsChute = 3;
+//    }
 
-    bitsChute = bitsChute | enableChute << 2 ;
+//    bitsChute = bitsChute | enableChute << 2 ;
 
-    //   buffer[7] = 0b01100000 | nivelChute;
-    buffer[7] = bitsChute << 4 | nivelChute;
+//    //   buffer[7] = 0b01100000 | nivelChute;
+//    buffer[7] = bitsChute << 4 | nivelChute;
 
 
 }
@@ -263,4 +272,3 @@ ostream & operator <<(std::ostream &out, ProtocoloSerial pct)
     return out;
 
 }
-

@@ -2,6 +2,8 @@
 #include<DefendeGol.h>
 #include<Sistema.h>
 
+#include "f180_serial_package.h"
+
 Agente::Agente()
 {
     id =0;
@@ -12,16 +14,18 @@ Agente::Agente()
 Agente::~Agente(){
 }
 
-void Agente::init(int _id, QMutex *_mBUS, CommunicationBUS *_bus)
+void Agente::init(int _id, QMutex *_mBUS, CommunicationBUS *_bus, std::shared_ptr<SerialRepository> serial_repo)
 {
+    cout << "ID" << endl;
     id = _id;
-
+    cout << "MONTADOR E NAVEGADOR" << endl;
     montador.setId(id);
     navegador.setId(id);
     navegador.ativar();
-
+    cout << "BUSES" << endl;
     mBUS = _mBUS;
     bus = _bus;
+    serial_repo_ = serial_repo;
 }
 
 void Agente::limparFilaTaticas(){
@@ -168,10 +172,14 @@ void Agente::addPacoteBUS()
     /// Analisando para aonde iremos enviar os pacotes do robo
     switch(ConfigComunicacao::TIPO_ROBOS){
     case REAL:
-        mBUS->lock();
-        // bus->setPacoteRobo(id, montador.criaPacoteSerial());
-        bus->setPacoteRobo(id, montador.createSerialMessage());
-        mBUS->unlock();
+        //mBUS->lock();
+        //bus->setPacoteRobo(id, montador.criaPacoteSerial());
+        //bus->setPacoteRobo(id, montador.createSerialMessage());
+        if (isPresente()) {
+            serial_repo_->set_robot_presence(static_cast<size_t>(id), true);
+            serial_repo_->package(static_cast<size_t>(id), montador.serial_package());
+        }
+        //mBUS->unlock();
         break;
 
     case SIMULADOR3D:

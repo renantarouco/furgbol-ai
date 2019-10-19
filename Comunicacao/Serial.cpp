@@ -92,7 +92,7 @@ void Serial::close()
 //!
 bool Serial::write(const ProtocoloSerial & pacote)
 {
-    vector <unsigned char> buf(8,0);
+    vector <unsigned char> buf(9,0);
 
 //    cout << pacote << endl;
 

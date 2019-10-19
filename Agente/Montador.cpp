@@ -100,20 +100,36 @@ ProtocoloSerial Montador::criaPacoteSerial(){
 
     /// calculando a velocidade do robo
     calculaVelLinear();
+    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
+    float x_vel = robo->getVelocidade().x();
+    float y_vel = robo->getVelocidade().y();
+    float theta_vel = robo->getVelAngular();
+    pacoteSerial.setPkgId(0);
+    pacoteSerial.setMsgType(0);
+    pacoteSerial.setId(robo->getId());
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< robo set id " << robo->getId() << std::endl;
+    pacoteSerial.setDirX((x_vel < 0) ? 1 : 3);
+    pacoteSerial.setDirY((y_vel < 0) ? 1 : 3);
+    pacoteSerial.setDirTheta((theta_vel < 0) ? 1 : 3);
+    pacoteSerial.setVelX(static_cast<uint8_t>(std::abs(127 * x_vel)));
+    pacoteSerial.setVelY(static_cast<uint8_t>(std::abs(127 * y_vel)));
+    pacoteSerial.setVelTheta(static_cast<uint8_t>(127 * theta_vel));
+    pacoteSerial.setKick(0);
+    pacoteSerial.setDribbler(0);
 
     /// aplicando o modelo cinematico para saber a velocidade angular de cada roda
-    calculaVelRodas();
+//    calculaVelRodas();
 
-    for(int i=0;i<4;i++){
-        pacoteSerial.setVelocidadePercentualRodas(i,(char)(fabs(velRodas[i][0])/ConfigMontador::MAX_VEL_RODAS*100));
-        pacoteSerial.setDirecaoRodas(i, velRodas[i][0] < 0 ? HORARIO : ANTI_HORARIO);
-    }
+//    for(int i=0;i<4;i++){
+//        pacoteSerial.setVelocidadePercentualRodas(i,(char)(fabs(velRodas[i][0])/ConfigMontador::MAX_VEL_RODAS*100));
+//        pacoteSerial.setDirecaoRodas(i, velRodas[i][0] < 0 ? HORARIO : ANTI_HORARIO);
+//    }
 
-    pacoteSerial.setDirecaoDriblador(comando.getDirecaoDrible());
-    pacoteSerial.setEnableDrible(comando.isUsaDrible());
-    // pacote.setVelocidadePercentualDriblador(0); mudei para linha de cima. Luan
-    pacoteSerial.setTipoChute(comando.getTipoChute());
-    pacoteSerial.setEnableChute(comando.getTipoChute() != Comando::SEM_CHUTE);
+//    pacoteSerial.setDirecaoDriblador(comando.getDirecaoDrible());
+//    pacoteSerial.setEnableDrible(comando.isUsaDrible());
+//    // pacote.setVelocidadePercentualDriblador(0); mudei para linha de cima. Luan
+//    pacoteSerial.setTipoChute(comando.getTipoChute());
+//    pacoteSerial.setEnableChute(comando.getTipoChute() != Comando::SEM_CHUTE);
 
     return pacoteSerial;
 }
@@ -331,20 +347,45 @@ void Montador::calculaVelRodas(){
     //                ajustaVelocidades();
 }
 
-furgbol::io::F180SerialMessage Montador::createSerialMessage() {
+F180SerialPackage Montador::serial_package()
+{
     calculaVelLinear();
     Robo *robo = Sistema::modeloMundo.getRoboEq(id);
     float x_vel = robo->getVelocidade().x();
     float y_vel = robo->getVelocidade().y();
     float theta_vel = robo->getVelAngular();
-    furgbol::io::F180SerialMessage serial_message;
-    serial_message.setDirectionX((x_vel < 0) ? 1 : 3);
-    serial_message.setDirectionY((y_vel < 0) ? 1 : 3);
-    serial_message.setDirectionTheta((theta_vel < 0) ? 1 : 3);
-    serial_message.setVelocityX(static_cast<uint8_t>(127 * x_vel));
-    serial_message.setVelocityY(static_cast<uint8_t>(127 * y_vel));
-    serial_message.setVelocityTheta(static_cast<uint8_t>(127 * theta_vel));
-    serial_message.setKick(0);
-    serial_message.setDribbler(0);
-    return serial_message;
+    serial_package_.robot_id(static_cast<uint8_t>(robo->getId()));
+    serial_package_.velocity(
+        static_cast<uint8_t>(std::abs(127 * x_vel)),
+        static_cast<uint8_t>(std::abs(127 * y_vel)),
+        static_cast<uint8_t>(std::abs(127 * theta_vel)));
+    serial_package_.direction(
+        (x_vel < 0) ? F180SerialPackage::NEGATIVE : F180SerialPackage::POSITIVE,
+        (y_vel < 0) ? F180SerialPackage::NEGATIVE : F180SerialPackage::POSITIVE,
+        (theta_vel < 0) ? F180SerialPackage::NEGATIVE : F180SerialPackage::POSITIVE);
+    serial_package_.dribbler(0);
+    serial_package_.kick(0);
+    return serial_package_;
 }
+
+//furgbol::io::F180SerialMessage Montador::createSerialMessage() {
+//    calculaVelLinear();
+//    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
+//    float x_vel = robo->getVelocidade().x();
+//    float y_vel = robo->getVelocidade().y();
+//    float theta_vel = robo->getVelAngular();
+//    furgbol::io::F180SerialMessage serial_message;
+//    serial_message.setPkgId(0);
+//    serial_message.setMsgType(0);
+//    serial_message.setRobotId(static_cast<uint8_t>(robo->getId()));
+//    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< robo set id " << static_cast<int>(serial_message.getRobotId()) << std::endl;
+//    serial_message.setDirectionX((x_vel < 0) ? 1 : 3);
+//    serial_message.setDirectionY((y_vel < 0) ? 1 : 3);
+//    serial_message.setDirectionTheta((theta_vel < 0) ? 1 : 3);
+//    serial_message.setVelocityX(static_cast<uint8_t>(std::abs(127 * x_vel)));
+//    serial_message.setVelocityY(static_cast<uint8_t>(std::abs(127 * y_vel)));
+//    serial_message.setVelocityTheta(static_cast<uint8_t>(127 * theta_vel));
+//    serial_message.setKick(0);
+//    serial_message.setDribbler(0);
+//    return serial_message;
+//}
