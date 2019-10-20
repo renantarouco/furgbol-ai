@@ -18,7 +18,7 @@
 
 #include <QUdpSocket>
 
-#include "serial_repository.h"
+#include "communication/serial_repository.h"
 
 /*!
  * Classe que controla a execução do programa através de comandos da interface
@@ -28,11 +28,11 @@ class Sistema : public QThread {
     Q_OBJECT
 
 public:
-    static ModeloMundo modeloMundo; /// instancia do modelo de mundo que vai ser global a todos os modulos
-    static Avaliador avaliador; ///< Objeto usado para fazer avaliações da estratégia em relação ao time todo e não apenas para um determinado robo
+    static ModeloMundo modeloMundo;
+    static Avaliador avaliador;
 
 private:
-    GerenteDC gerenteCentral; ///< Objeto do gerente deliberativo usada para controlar a estrategia da equipe
+    GerenteDC gerenteCentral;
     vector<Agente> agentes; /// O número de agentes depende de quantos foram enviados pelo gerente de dados
     unsigned int numAgentesAtivos;   /// < Variável contém o número de agentes em atividade para um dado momento na partida.
 
@@ -47,27 +47,17 @@ private:
     AI2DSimulatorPackage pacoteSimulador2D;
     DataPackage pacoteGD;
     QByteArray datagram;
-
-    std::shared_ptr<SerialRepository> serial_repo_;
 public slots:
     void processPacotes();
-
 public:
     Sistema();
     ~Sistema();
-
-    void init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao, std::shared_ptr<SerialRepository>);
-
-    void stop();
-
     void tratarPacoteRecebido();
     void addPacoteMonitoradorBUS();
-
-    void run();
-
-    /// Funções set
-//    void setPosicoesAgentes(const vector<int> posicoes);
     void setPapeisAgentes(map<int, vector<Tatica*> > & papeis);
+    void init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao);
+    void run();
+    void stop();
 };
 
 #endif // SISTEMA_H

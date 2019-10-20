@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui network
+QT += core network
 TEMPLATE = app
 
 TARGET = ai
@@ -16,6 +16,7 @@ INCLUDEPATH += \
 
 HEADERS += \
   communication/f180_serial_package.h \
+  communication/repository_proxy.h \
   communication/serial_repository.h \
   communication/grsim_repository.h \
   communication/monitor_repository.h \
@@ -28,6 +29,7 @@ HEADERS += \
 
 SOURCES += main.cpp \
   communication/f180_serial_package.cpp \
+  communication/repository_proxy.cpp \
   communication/serial_repository.cpp \
   communication/grsim_repository.cpp \
   communication/monitor_repository.cpp \

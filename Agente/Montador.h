@@ -9,7 +9,7 @@
 #include <ConfigComunicacao.h>
 #include <ConfigMontador.h>
 
-#include "f180_serial_package.h"
+#include "communication/f180_serial_package.h"
 
 /**
  * O montador é a parte da arquitetura onde se preocupa em passar alvos direçoes e comandos para pacotes definidos para o robo a serem enviados pela serial.

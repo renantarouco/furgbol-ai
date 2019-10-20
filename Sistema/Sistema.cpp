@@ -1,6 +1,8 @@
 #include "Sistema.h"
 #include <Halt.h>
 
+#include "utils/utils.h"
+
 ModeloMundo Sistema::modeloMundo;
 Avaliador Sistema::avaliador;
 
@@ -11,31 +13,19 @@ Sistema::Sistema()
 Sistema::~Sistema()
 {
     stop();
-
-    cout << "FINALIZANDO SISTEMA" << endl;
 }
 
-void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao, std::shared_ptr<SerialRepository> serial_repo)
+void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao)
 {
-    cout << "INICIANDO SISTEMA" << endl;
-
+    DEBUG("starting system");
+    r_udpSocket.bind(ConfigComunicacao::PORTA_RECEBER, QUdpSocket::ShareAddress);
     numAgentesAtivos = 0;
     mBUS = _mBUS;
     bus = _barramentoComunicacao;
-    serial_repo_ = serial_repo;
-
-    /// iniciando modelo de mundo
     modeloMundo.init();
     modeloMundo.setRobosTemChute(Config::ROBOS_TEM_CHUTE);
-
-    /// iniciando gerente deliberativo
     gerenteCentral.init();
-
-    /// setando a porta que será usada
-    r_udpSocket.bind(ConfigComunicacao::PORTA_RECEBER, QUdpSocket::ShareAddress);
     connect(&r_udpSocket, SIGNAL(readyRead()), this, SLOT(processPacotes()));
-
-    /// Variavel que ira indicar as constantes que serao usadas para calcular a velocidade dos robos
     agentes.resize(NUM_MAX_ROBOS);
     cout << "INICIANDO AGENTES" << endl;
     for(int id=0; id<NUM_MAX_ROBOS; id++) {
@@ -46,8 +36,6 @@ void Sistema::init(QMutex* _mBUS, CommunicationBUS* _barramentoComunicacao, std:
 
 void Sistema::stop()
 {
-    cout << "FINALIZANDO SISTEMA" << endl;
-
     quit();
     wait();
 }
@@ -62,28 +50,16 @@ void Sistema::tratarPacoteRecebido(){
     }
 }
 
-void Sistema::processPacotes(){
-
-//    cout << "carregando constantes....." << endl;
-//    Config::load();
-//    cout << "finalizado...." << endl;
-
-    /// função que trata o pacote recebido e seta os valores que foram recebidos nas respectivas variáveis
+void Sistema::processPacotes()
+{
     tratarPacoteRecebido();
-
-    /// Verificando se iremos precisar ou não alterar o sinal dos pontos das jogadas. Só iremos mudar quando mudarmos de lado.
     if(modeloMundo.isMudarSinalPontosJogadas()){
         gerenteCentral.mudarSinalPontosJogadas();
     }
-
-    /// fazendo o monitoramento da jogada e analisando qual será a próxima ação a ser executada
     gerenteCentral.analisarJogada();
-
-    /// verificando se teremos que fazer uma troca de papeis entre os robos
     if(gerenteCentral.trocarPapeisOn())
     {
-        cout << "trocando papeis entre agentes...." << endl;
-
+        DEBUG("changing agents assignments");
         papeisRobos = gerenteCentral.atribuirPapeis();
         setPapeisAgentes(papeisRobos); /// Setando a nova ordem de execução dos agentes
 
@@ -181,23 +157,11 @@ void Sistema::run()
 {
     cout << "STARTING SISTEMA" << endl;
     iteracao = 1;
-
-    /// executando o loop da thread
     exec();
 }
 
-//void Sistema::setPosicoesAgentes(const vector<int> posicoes)
-//{
-//    for(int id=0;id<NUM_MAX_ROBOS;id++){
-//        if(agentes[id].isPresente()){
-//            agentes[id].setPosicao(posicoes[id]);
-//        }
-//    }
-//}
-
-void Sistema::setPapeisAgentes(map<int, vector<Tatica*> > & papeis){
-
-    /// Setando os papeis dos robos em cada agente para serem executados
+void Sistema::setPapeisAgentes(map<int, vector<Tatica*> > & papeis)
+{
     for(int id = 0; id < NUM_MAX_ROBOS; id++){
         if(agentes[id].isPresente()){
             agentes[id].setPapel(papeis[id]);

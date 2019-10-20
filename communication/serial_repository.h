@@ -18,7 +18,7 @@ public:
   void package(size_t, F180SerialPackage);
 private:
   std::mutex mutex_;
-  std::vector<F180SerialPackage*> packages_;
+  std::vector<F180SerialPackage> packages_;
   std::vector<bool> packages_sent_;
 };
 

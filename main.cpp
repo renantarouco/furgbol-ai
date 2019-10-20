@@ -12,10 +12,10 @@
 //#include "f180_serial_package.h"
 //#include "serial_repository.h"
 
+#include "system/system.h"
+
 int main(int argc, char* argv[])
 {
-    QCoreApplication a(argc, argv);
-
 //    /// carregando as constantes
 //    Config config;
 //    config.load();
@@ -27,24 +27,26 @@ int main(int argc, char* argv[])
     /// variáveis utilizadas na IA
     QMutex mBUS; ///< Mutex para controlar o acesso ao objeto communcation bus
     CommunicationBUS bus; /// barramento utilizado na comunicação entre a thread principal e a de comunicacao;
-    std::shared_ptr<SerialRepository> serial_repo = std::make_shared<SerialRepository>(6);
+
 
     /// iniciando a thread do Sistema
-    Sistema sistema;
-    sistema.init(&mBUS, &bus, serial_repo);
-    sistema.start();
+//    Sistema sistema;
+//    sistema.init(&mBUS, &bus, serial_repo);
+//    sistema.start();
 
 //    /// iniciando a thread do comunicador que é aonde iremos enviar os pacotes para os robos ou simuladores
-    Comunicador comunicador;
-    comunicador.init(&mBUS, &bus);
-    comunicador.start();
+//    Comunicador comunicador;
+//    comunicador.init(&mBUS, &bus);
+//    comunicador.start();
 
     /// loop da thread do main
-    a.exec();
+    //a.exec();
 
     /// parando as threads
-    sistema.stop();
+//    sistema.stop();
     //comunicador.stop();
-
+    System system;
+    system.init(argc, argv);
+    system.run();
     return 0;
 }

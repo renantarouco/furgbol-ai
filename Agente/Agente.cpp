@@ -2,7 +2,7 @@
 #include<DefendeGol.h>
 #include<Sistema.h>
 
-#include "f180_serial_package.h"
+#include "communication/f180_serial_package.h"
 
 Agente::Agente()
 {
@@ -176,7 +176,7 @@ void Agente::addPacoteBUS()
         //bus->setPacoteRobo(id, montador.criaPacoteSerial());
         //bus->setPacoteRobo(id, montador.createSerialMessage());
         if (isPresente()) {
-            serial_repo_->set_robot_presence(static_cast<size_t>(id), true);
+            //serial_repo_->set_robot_presence(static_cast<size_t>(id), true);
             serial_repo_->package(static_cast<size_t>(id), montador.serial_package());
         }
         //mBUS->unlock();
