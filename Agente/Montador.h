@@ -4,12 +4,12 @@
 #include <opencv/cv.h>
 #include <grSim-proto/grSim_Packet.pb.h>
 
-#include <ProtocoloSerial.h>
+#include "communication/f180_serial_package.h"
+
+// LEGACY CODE
 #include <Relogio.h>
 #include <ConfigComunicacao.h>
 #include <ConfigMontador.h>
-
-#include "communication/f180_serial_package.h"
 
 /**
  * O montador é a parte da arquitetura onde se preocupa em passar alvos direçoes e comandos para pacotes definidos para o robo a serem enviados pela serial.
@@ -19,7 +19,6 @@ class Montador
 
 private:
     /// pacotes usados para nos comunicar com os robos
-    ProtocoloSerial pacoteSerial;
     F180SerialPackage serial_package_;
     /**
       O modelo cinamatico esta associado a uma equação que permite
@@ -83,8 +82,8 @@ public:
     void setId(int _id);
     void calculaVelLinear();
     void calculaVelRodas();
-    ProtocoloSerial criaPacoteSerial();
     grSim_Packet criaPacoteGrSim();
-    F180SerialPackage serial_package();
+    grSim_Robot_Command criaPacoteRobo();
+    F180SerialPackage criaPacoteSerial();
 };
 #endif

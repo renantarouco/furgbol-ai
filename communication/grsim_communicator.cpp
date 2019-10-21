@@ -5,9 +5,7 @@
 
 GrSimCommunicator::GrSimCommunicator(std::shared_ptr<GrSimRepository> repository, std::shared_ptr<bool> running) :
     repository_(repository),
-    ip_(Configuration::GRSIM_IP.c_str()),
-    port_(Configuration::GRSIM_PORT),
-    writer_(),
+    writer_(Configuration::GRSIM_IP, Configuration::GRSIM_PORT),
     running_(running)
 {
 
@@ -21,16 +19,13 @@ void GrSimCommunicator::init()
 void GrSimCommunicator::run()
 {
     while (*running_) {
-        grSim_Packet packet = repository_->packet();
-        std::string datagram;
-        packet.SerializeToString(&datagram);
-        long long res = writer_.writeDatagram(
-            datagram.c_str(),
-            static_cast<long long>(datagram.size()),
-            ip_,
-            port_);
-        if (res == -1) {
-            DEBUG("error sending datagram");
+        if (!repository_->is_package_sent()) {
+            grSim_Packet packet = repository_->packet();
+            std::string datagram;
+            packet.SerializeToString(&datagram);
+            writer_.send(datagram);
+            repository_->set_package_sent();
+            DEBUG("sent grsim packet");
         }
     }
 }

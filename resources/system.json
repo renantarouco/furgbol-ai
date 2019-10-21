@@ -3,16 +3,21 @@
         "max_robots": 6,
         "robots_type": 1
     },
+    "perception": {
+        "ip": "127.0.0.1",
+        "receive_port": 8765,
+        "send_port": 5678
+    },
     "serial": {
         "port": "/dev/ttyACM0",
         "package_size": 9
     },
-    "grSim": {
-        "ip": "10.224.23.2",
-        "port": 10006
+    "grsim": {
+        "ip": "224.5.23.2",
+        "port": 20011
     },
     "monitor": {
-        "ip": "10.224.23.1",
+        "ip": "127.0.0.1",
         "port": 5678
     }
 }

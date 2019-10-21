@@ -29,6 +29,12 @@ AIDataManagerPackage MonitorRepository::packet()
     return packet_;
 }
 
+void MonitorRepository::packet(AIDataManagerPackage packet)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    packet_.CopyFrom(packet);
+}
+
 AIRobotPackage MonitorRepository::package(size_t id)
 {
   std::lock_guard<std::mutex> lock(mutex_);

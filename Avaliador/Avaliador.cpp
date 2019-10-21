@@ -54,7 +54,7 @@ int Avaliador::getIdRoboNaoPodeTocarBola(){
     vector<Robo>* robosEq = Sistema::modeloMundo.getRobosEq();
 
     /// Pegando o id do robo que nao pode tocar na bola
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
+    for(int id=0; id < Configuration::SYSTEM_MAX_ROBOTS;id++){
         Robo* roboEq = &robosEq->at(id);
 
         /// verificando se o robo está presente e se ele não pode tocar na bola
@@ -250,7 +250,7 @@ int Avaliador::getIdAdvMaisProxGolSemBola(vector<int> idsRobosAdvMarcados, bool 
     /// Pegando o id do robo adv mais perto da bola
     int idRoboAdvMaisPertoBola = getIdDistAdvMaisPertoBola().first;
 
-    for(int id = 0;id<NUM_MAX_ROBOS;id++){
+    for(int id = 0;id<Configuration::SYSTEM_MAX_ROBOTS;id++){
         Robo* roboAdv = &robosAdv->at(id);
 
         if(roboAdv->isPresente()){
@@ -315,7 +315,7 @@ int Avaliador::getQtRobosAreaCampoFrenteRoboComBola(int idDesconsiderar, int pos
     int direitoCima = 0, esquerdoCima = 0, direitoBaixo = 0, esquerdoBaixo = 0;
     Ponto posRobo;
 
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
+    for(int id=0;id<Configuration::SYSTEM_MAX_ROBOTS;id++){
         Robo* roboEq = &robosEq->at(id);
 
         /// verificando se o robo está presente e se é diferente do id que queremos desconsiderar
@@ -471,7 +471,7 @@ vector<Ponto> Avaliador::getRobosEntrePontos(const vector<int>& idRobosEqIgnorar
     vector<Ponto> posRobos; /// Posição dos robôs que estão
 
     /// Pegando os robos da equipe proximos do segmento
-    for(int id = 0; id < NUM_MAX_ROBOS; id++){
+    for(int id = 0; id < Configuration::SYSTEM_MAX_ROBOTS; id++){
         Robo* roboEq = &robosEq->at(id);
 
         /// Pegando os robos da equipe que estão proximos do segmento
@@ -543,7 +543,7 @@ float Avaliador::analisarAlvo(const float& distSegmento, const float& distRobo){
     float K = float(ConfigAvaliador::K_ANALISE);
     float Q = float(ConfigAvaliador::Q_ANALISE);
 
-    /** A primeira parcela é sobre a distancia do robô à reta enquanto a segunda é sobre a distancia robo.
+    /** A primeira parcela é sobre a distancia do robô �  reta enquanto a segunda é sobre a distancia robo.
 
         Quanto maior for 'K' maior será o score retornado. O que realmente interessa é o grau de decrescimento
         deterado por Q, o valor de Q é nove vezes menor para a parcela das distancias ao robo.

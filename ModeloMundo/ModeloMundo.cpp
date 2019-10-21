@@ -1,16 +1,12 @@
 #include "ModeloMundo.h"
+
 #include <Sistema.h>
 
-ModeloMundo::ModeloMundo(){
-    /// criando o vetor dos robos da equipe e dos adversários
-    robosEq.resize(NUM_MAX_ROBOS);
-    robosAdv.resize(NUM_MAX_ROBOS);
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
-        robosEq[id].init(id, true);
-        robosAdv[id].init(id, true);
-    }
+#include "configuration/configuration.h"
+#include "utils/utils.h"
 
-    idGoleiroEq = 1;
+ModeloMundo::ModeloMundo(){
+
 }
 
 ModeloMundo::~ModeloMundo(){
@@ -18,6 +14,15 @@ ModeloMundo::~ModeloMundo(){
 
 void ModeloMundo::init(){
     cout << "INICIANDO MODELO DE MUNDO" << endl;
+
+    /// criando o vetor dos robos da equipe e dos adversários
+    robosEq.resize(Configuration::SYSTEM_MAX_ROBOTS);
+    robosAdv.resize(Configuration::SYSTEM_MAX_ROBOTS);
+    for(size_t id=0; id < Configuration::SYSTEM_MAX_ROBOTS; id++) {
+        robosEq[id].init(static_cast<int>(id), true);
+        robosAdv[id].init(static_cast<int>(id), true);
+    }
+    idGoleiroEq = 1;
 
     /// setando o tempo inicial da iteração com a hora atual
     relogio.setTempoInicial(relogio.getTempoDoDia());
@@ -104,7 +109,7 @@ bool ModeloMundo::verificarRoboMaisProxBola(){
     float menorDistAdv = numeric_limits<float>::infinity();
     Ponto posBola = bola.getPosicao();
 
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
+    for(size_t id=0; id < Configuration::SYSTEM_MAX_ROBOTS; id++){
 
         /// Verificando se o robo esta presente na partida
         Robo* roboEq = &robosEq[id];
@@ -201,7 +206,7 @@ vector<Robo*> ModeloMundo::getOutrosRobosComTatica(int _id, string _nomeTatica){
     vector<Robo*> robosComMesmaTatica;
 
     /// Pegando o id dos robos menos o do goleiro
-    for(int idRobo = 0; idRobo < NUM_MAX_ROBOS; idRobo++){
+    for(size_t idRobo = 0; idRobo < Configuration::SYSTEM_MAX_ROBOTS; idRobo++){
         Robo* roboEq = &robosEq[idRobo];
 
         /// Verificando se o robô não tem o mesmo id que o passado como parâmetro e se possue a mesma tática corrente
@@ -235,7 +240,6 @@ vector<int>* ModeloMundo::getIdRobosMenosGoleiro()
 
 void ModeloMundo::coletaDados(const DataPackage& pacoteEntrada)
 {
-
     /// lendo os dados das posições dos robos
     if(pacoteEntrada.has_control()){
         coletaDadosControle(pacoteEntrada.control());
@@ -250,8 +254,6 @@ void ModeloMundo::coletaDados(const DataPackage& pacoteEntrada)
     if(pacoteEntrada.has_vision()){
         coletaDadosVisao(pacoteEntrada.vision());
     }
-
-    /// atualizando os fatos do mundo toda vez que chega um pacote
     atualizarFatos();
 }
 
@@ -282,7 +284,7 @@ void ModeloMundo::coletaDados(const AI2DSimulatorPackage& pacoteEntrada)
 
     /// Deixa todos os robos como ausentes e so poem como presentes os que chegarem neste pacote
     idRobosEqMenosGoleiro.clear();
-    for(int id = 0; id < NUM_MAX_ROBOS; id++){
+    for (size_t id = 0; id < Configuration::SYSTEM_MAX_ROBOTS; id++) {
         robosEq[id].dontPresent();
         robosAdv[id].dontPresent();
     }
@@ -327,40 +329,30 @@ void ModeloMundo::coletaDados(const AI2DSimulatorPackage& pacoteEntrada)
 
 void ModeloMundo::coletaDadosVisao(const VisionPackage& pacoteVisao)
 {
-    //    cout << " INICIO LEITURA DADOS VISAO" << endl;
-
     int numFramePacote = pacoteVisao.frame_number();
     if(numFramePacote > numeroUltimoFrameRecebido){
 
         if ( numFramePacote > numeroUltimoFrameRecebido+1){
             cout << "Perdeu " << numFramePacote - numeroUltimoFrameRecebido -1 << " frames " << endl;
         }
-
         numeroUltimoFrameRecebido = pacoteVisao.frame_number();
-
         /// setando que os robos não estão presentes inicialmente
         idRobosEqMenosGoleiro.clear();
-        for(int id = 0; id<NUM_MAX_ROBOS; id++){
+        for(size_t id = 0; id < Configuration::SYSTEM_MAX_ROBOTS; id++){
             robosEq[id].dontPresent();
             robosAdv[id].dontPresent();
         }
-
         /// analisando os pacotes dos robos que foram encontrados no campo
         qtRobosEqPresentes = pacoteVisao.team_size();
         for(int i = 0; i < qtRobosEqPresentes; i++){
-
             /// pegando o pacote do robo da equipe
             RobotPackage pacoteRobo = pacoteVisao.team(i);
             int idRobo = pacoteRobo.id();
             robosEq[idRobo].setDados(Ponto(pacoteRobo.x(), pacoteRobo.y()), pacoteRobo.orientation());
-
-            //            cout << "robo " << idRobo << ", " << robosEq[idRobo].getPosicao().x() << " " << robosEq[idRobo].getPosicao().y() << endl;
-
             /// inserindo no vetor os ids dos robos presentes menos o id do goleiro
             if(idRobo != idGoleiroEq)
                 idRobosEqMenosGoleiro.push_back(idRobo);
         }
-
         /// analisando os pacotes dos robos adv que foram encontrados no campo
         qtRobosAdvPresentes = pacoteVisao.enemy_size();
         for(int i = 0; i < qtRobosAdvPresentes; i++){
@@ -370,18 +362,10 @@ void ModeloMundo::coletaDadosVisao(const VisionPackage& pacoteVisao)
             int idRobo = pacoteRobo.id();
             robosAdv[idRobo].setDados(Ponto(pacoteRobo.x(),pacoteRobo.y()), pacoteRobo.orientation());
         }
-
         delayGerenteDados = pacoteVisao.delay();
-        //        cout << "delay " << delayGerenteDados << endl;
         numeroUltimoFrameRecebido = pacoteVisao.frame_number();
-        //cout << "numero ultimo frame" << numeroUltimoFrameRecebido << endl;
-        //cout << "Coletando dado Bola " << endl;
         coletaDadosBola(pacoteVisao.ball());
-
-        //        robos[idGoleiro]->setPresenca(true);
     }
-
-    //    cout << " FIM LEITURA DADOS VISAO" << endl;
 }
 
 
@@ -613,7 +597,7 @@ map<string,bool>* ModeloMundo::getFatos()
 
 Robo* ModeloMundo::getRoboEq(int _id)
 {
-    if(_id >= NUM_MAX_ROBOS || _id < 0 ){
+    if(_id >= Configuration::SYSTEM_MAX_ROBOTS || _id < 0 ){
         cout <<  " ERRO id invalido na get ROBO " << endl;
         return NULL;
     }
@@ -624,7 +608,7 @@ Robo* ModeloMundo::getRoboEq(int _id)
 
 Robo* ModeloMundo::getRoboAdv(int _id)
 {
-    if(_id > NUM_MAX_ROBOS || _id < 0 ){
+    if(_id > Configuration::SYSTEM_MAX_ROBOTS || _id < 0 ){
         cout <<  " ERRO id invalido na get ROBO " << endl;
         return NULL;
     }

@@ -4,14 +4,11 @@
 #include <memory>
 
 #include <AvaliadorRobo.h>
-#include "CommunicationBUS.h"
 #include <Tatica.h>
 #include <Montador.h>
-#include <Comunicador.h>
-#include <ProtocoloSerial.h>
 #include <Navegador.h>
 
-#include "communication/serial_repository.h"
+#include "communication/repository_proxy.h"
 
 /**
  * Classe que guarda as informações de um processo referente a um robô.
@@ -24,11 +21,10 @@ class Agente
 {
 protected:
     unsigned int id;
-    QMutex* mBUS;
-    CommunicationBUS* bus;
     int iteracoes;
     vector<Tatica*> filaTaticasPen;
     unsigned int posFila; /// Especifica a posicao atual sendo utilizada na fila de taticas pendentes
+    std::shared_ptr<RepositoryProxy> repository_;
     /// Variáveis usadas para o path planning.
     Navegador navegador; /// Navegador usado para calcular o path planning dos robos para que não se colidam.
     bool navegadorPronto;
@@ -36,7 +32,7 @@ protected:
 public:
     Agente();
     ~Agente();
-    void init(int _id, QMutex* _mBUS, CommunicationBUS* _bus);
+    void init(int _id, std::shared_ptr<RepositoryProxy>);
     unsigned int getId();
     void executarTatica();
     bool atualizarTatica();

@@ -16,8 +16,9 @@ class System
 {
 public:
     System();
-    void init(int, char**);
+    void init();
     void run();
+    std::shared_ptr<RepositoryProxy> repository() { return repository_proxy_; }
 private:
     std::shared_ptr<bool> running_;
     std::shared_ptr<SerialRepository> serial_repo_;

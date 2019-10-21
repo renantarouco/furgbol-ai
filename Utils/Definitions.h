@@ -62,9 +62,9 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel                     
 typedef pair<int, Ponto> IntPonto; ///< pair que indica um valor inteiro (id do robo, score chute) e um ponto (alvo, posicao)
 typedef pair<int, float> IdDistancia; ///< pair que indica uma distancia e provavelmente o id do robo
 
-enum TipoRobos {
-    REAL=0, SIMULADOR3D=1, SIMULADOR2D=2
-};
+//enum TipoRobos {
+//    REAL=0, SIMULADOR3D=1, SIMULADOR2D=2
+//};
 
 enum Direcao{
     HORARIO =0, ANTI_HORARIO = 1

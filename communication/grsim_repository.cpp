@@ -5,10 +5,6 @@ GrSimRepository::GrSimRepository(size_t n_robots) :
   packet_(),
   package_sent_(true)
 {
-    for (size_t i = 0; i < n_robots; ++i) {
-        grSim_Robot_Command* command = packet_.mutable_commands()->add_robot_commands();
-        command->set_id(static_cast<google::protobuf::uint32>(i));
-    }
 }
 
 bool GrSimRepository::is_package_sent()
@@ -27,6 +23,13 @@ grSim_Packet GrSimRepository::packet()
 {
     std::lock_guard<std::mutex> lock(mutex_);
     return packet_;
+}
+
+void GrSimRepository::packet(grSim_Packet packet)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    packet_.CopyFrom(packet);
+    package_sent_ = false;
 }
 
 grSim_Robot_Command GrSimRepository::package(size_t id)

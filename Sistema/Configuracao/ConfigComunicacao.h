@@ -1,6 +1,9 @@
 #ifndef CONFIGCOMUNICACAO_H
 #define CONFIGCOMUNICACAO_H
 
+#include "configuration/configuration.h"
+
+// LEGACY CODE
 #include "Definitions.h"
 
 /**
@@ -13,7 +16,7 @@ class ConfigComunicacao
 public:
     ConfigComunicacao();
 
-    static TipoRobos TIPO_ROBOS;
+    static RobotsType TIPO_ROBOS;
     static string DISPOSITIVO_SERIAL;
 
     static bool USAR_REFEREE;

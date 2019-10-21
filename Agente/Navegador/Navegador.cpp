@@ -15,6 +15,8 @@
 //float allegro2campo_y(int y);
 // ======================================
 
+#include "configuration/configuration.h"
+
 /**
 *  O método protegido atualizaObstaculosInterno.
 *  Atualiza a posição dos obstáculos interno, os robos.
@@ -28,7 +30,7 @@ void Navegador::atualizaObstaculosInterno()
     vector<Robo>* robosEq = Sistema::modeloMundo.getRobosEq();
     vector<Robo>* robosAdv = Sistema::modeloMundo.getRobosAdv();
 
-    for(int id=0; id< NUM_MAX_ROBOS;id++){
+    for(int id=0; id< Configuration::SYSTEM_MAX_ROBOTS ;id++){
 
         /// verificando se o robo está presente
         Robo* roboEq = &robosEq->at(id);
@@ -334,8 +336,8 @@ void Navegador::inicializaNavegador()
     navegadorAtivo = false;
 
     //    srand(time(NULL));
-    m_obstaculosRoboEqAtivados.resize(NUM_MAX_ROBOS, true);
-    m_obstaculosRoboAdvAtivados.resize(NUM_MAX_ROBOS, true);
+    m_obstaculosRoboEqAtivados.resize(Configuration::SYSTEM_MAX_ROBOTS, true);
+    m_obstaculosRoboAdvAtivados.resize(Configuration::SYSTEM_MAX_ROBOTS, true);
 
     raioObstaculoRobo = 2*RAIO_ROBO+PATH_PLANNING_TAM_EXTRA_OBSTACULO;
     m_cache.resize(PATH_PLANNING_MAX_NUM_CACHE_PONTOS+5);
@@ -901,7 +903,7 @@ Ponto Navegador::RRT (Ponto alvo)
 {
     if(navegadorAtivo){
 
-        if(m_ID >= 0 && m_ID < NUM_MAX_ROBOS)
+        if(m_ID >= 0 && m_ID < Configuration::SYSTEM_MAX_ROBOTS)
         {
             calculaCaminho(Sistema::modeloMundo.getRoboEq(m_ID)->getPosicao() , alvo);
             Sistema::modeloMundo.getRoboEq(m_ID)->setPacotePathPlanning(criaPacotePathPlanning());
@@ -928,7 +930,7 @@ vector<Ponto> Navegador::pontosRRT(Ponto alvo)
 {
     if(navegadorAtivo){
 
-        if(m_ID >= 0 && m_ID < NUM_MAX_ROBOS)
+        if(m_ID >= 0 && m_ID < Configuration::SYSTEM_MAX_ROBOTS)
         {
             calculaCaminho(Sistema::modeloMundo.getRoboEq(m_ID)->getPosicao() , alvo);
             Sistema::modeloMundo.getRoboEq(m_ID)->setPacotePathPlanning(criaPacotePathPlanning());

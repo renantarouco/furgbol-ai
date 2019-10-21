@@ -388,7 +388,7 @@ int AvaliadorRobo::getQtRobosRegiao(const Ponto& centro, const float& raio){
     vector<Robo>* robosAdv = Sistema::modeloMundo.getRobosAdv();
 
     /// analisando todos os robos
-    for(int id=0;id<NUM_MAX_ROBOS;id++){
+    for(int id=0;id<Configuration::SYSTEM_MAX_ROBOTS;id++){
 
         /// verificando se o robo está presente e se o id dele é diferente do robo que está fazendo a avaliação
         Robo roboEq = robosEq->at(id);

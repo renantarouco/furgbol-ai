@@ -11,7 +11,6 @@ class SerialRepository
 {
 public:
   SerialRepository(size_t);
-  ~SerialRepository();
   bool is_package_sent(size_t);
   void set_package_sent(size_t);
   F180SerialPackage package(size_t);

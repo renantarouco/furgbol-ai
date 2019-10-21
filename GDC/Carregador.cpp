@@ -622,7 +622,7 @@ void Carregador::tratarPonto(string param, fstream &arq, Tatica* tatica){
         out << param;                     /// Pegando o valor da string
         out >> raio;                      /// Fazendo o casting de string para float
 
-        tatica->addParamFloat(raio);      /// Adicionando o raio à tática.
+        tatica->addParamFloat(raio);      /// Adicionando o raio �  tática.
     }
 }
 

@@ -106,7 +106,7 @@ void Config::load(string pathConfig){
         pathMontador.append("montador.ini");
         ConfigMontador::load(pathMontador.toStdString());
 
-    }else if(ConfigComunicacao::TIPO_ROBOS == SIMULADOR3D){
+    }else if(ConfigComunicacao::TIPO_ROBOS == SIMULATED){
 
         /// setando o path do avaliador
         pathAvaliador.append("avaliador_simulador3d.ini");
@@ -116,14 +116,6 @@ void Config::load(string pathConfig){
         pathMontador.append("montador_simulador3d.ini");
         ConfigMontador::load(pathMontador.toStdString());
 
-    }else if(ConfigComunicacao::TIPO_ROBOS == SIMULADOR2D){
-        /// setando o path do avaliador
-        pathAvaliador.append("avaliador_simulador2d.ini");
-        ConfigAvaliador::load(pathAvaliador.toStdString());
-
-        /// setando o path do montador
-        pathMontador.append("montador_simulador2d.ini");
-        ConfigMontador::load(pathMontador.toStdString());
     }
 }
 

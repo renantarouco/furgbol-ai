@@ -1,31 +1,32 @@
 #include "Agente.h"
+
+#include <string>
+
 #include<DefendeGol.h>
 #include<Sistema.h>
 
 #include "communication/f180_serial_package.h"
+#include "configuration/configuration.h"
+#include "utils/utils.h"
 
 Agente::Agente()
 {
-    id =0;
-    posFila=0;
-    iteracoes=0;
+    id = 0;
+    posFila = 0;
+    iteracoes = 0;
 }
 
 Agente::~Agente(){
 }
 
-void Agente::init(int _id, QMutex *_mBUS, CommunicationBUS *_bus, std::shared_ptr<SerialRepository> serial_repo)
+void Agente::init(int _id, std::shared_ptr<RepositoryProxy> repository)
 {
-    cout << "ID" << endl;
-    id = _id;
-    cout << "MONTADOR E NAVEGADOR" << endl;
-    montador.setId(id);
-    navegador.setId(id);
+    DEBUG("initializing agent " + std::to_string(_id));
+    id = static_cast<unsigned int>(_id);
+    montador.setId(static_cast<int>(id));
+    navegador.setId(static_cast<int>(id));
     navegador.ativar();
-    cout << "BUSES" << endl;
-    mBUS = _mBUS;
-    bus = _bus;
-    serial_repo_ = serial_repo;
+    repository_ = repository;
 }
 
 void Agente::limparFilaTaticas(){
@@ -70,29 +71,18 @@ unsigned int Agente::getId()
 
 void Agente::executarTatica(){
 
-    if(Sistema::modeloMundo.getRoboEq(id)->isPresente()){
-
+    if(Sistema::modeloMundo.getRoboEq(static_cast<int>(id))->isPresente()){
         /// verificando se ainda tem Tática na fila para executar
         if(!filaTaticasPen.empty()){
-
             /// verificando se iremos usar o navegador nessa iteração
             navegadorPronto = iteracoes++ % 10 ? true : false;
-
             /// pegando a tática que será executada
             Tatica* tatica = filaTaticasPen[posFila];
-
-            /// setando a tática atual no robo que corresponde ao agente
-            Sistema::modeloMundo.getRoboEq(id)->setTaticaCorrente(tatica);
-
-            /// executando tática
+            Sistema::modeloMundo.getRoboEq(static_cast<int>(id))->setTaticaCorrente(tatica);
             tatica->executar(this);
-
-            cout << id << " executando tática " << tatica->getNome() << endl;
-
-            /// setando o pacote do agente no barramento de comunicação
             addPacoteBUS();
         }else{
-            cout << "id_agente: " << id << " tem fila de táticas vazia" << endl;
+            DEBUG("tactics queque empty of agent " + std::to_string(id));
         }
     }
 }
@@ -100,7 +90,7 @@ void Agente::executarTatica(){
 bool Agente::atualizarTatica(){
 
     /// Verificando se a jogada terminou
-    if(filaTaticasPen[posFila]->verificarTermino(id))
+    if(filaTaticasPen[posFila]->verificarTermino(static_cast<int>(id)))
     {
         /// Senao existir mais taticas e a tatica for a tatica ativa iremos selecionar uma nova jogada, caso contrario iremos continuar executando a tatica
         if(posFila == filaTaticasPen.size()-1){
@@ -110,7 +100,7 @@ bool Agente::atualizarTatica(){
             }
         }else{
             posFila++;
-            Sistema::modeloMundo.getRoboEq(id)->setTaticaCorrente(filaTaticasPen[posFila]);
+            Sistema::modeloMundo.getRoboEq(static_cast<int>(id))->setTaticaCorrente(filaTaticasPen[posFila]);
         }
     }
 
@@ -119,14 +109,13 @@ bool Agente::atualizarTatica(){
 
 void Agente::setPapel(vector<Tatica *>& _taticasPen){
     filaTaticasPen = _taticasPen;
-
     posFila=0;
     if(filaTaticasPen.size() == 0)
     {
-        cout << "Atencao nenhuma tatica se aplica a esta situacao " << endl;
+        DEBUG("no tactics apply");
         return;
     }
-    Sistema::modeloMundo.getRoboEq(id)->setTaticaCorrente(filaTaticasPen[posFila]);
+    Sistema::modeloMundo.getRoboEq(static_cast<int>(id))->setTaticaCorrente(filaTaticasPen[posFila]);
 }
 
 bool Agente::isFilaTaticasVazia()
@@ -136,14 +125,14 @@ bool Agente::isFilaTaticasVazia()
 
 void Agente::setPosicao(int pos)
 {
-    posFila =pos;
+    posFila = static_cast<unsigned int>(pos);
 
 }
 
 int Agente::getPosicao()
 {
 
-    return posFila;
+    return static_cast<int>(posFila);
 }
 
 Tatica* Agente::getTaticaCorrente()
@@ -163,44 +152,33 @@ vector<Ponto> Agente::calcAlvosFromPathPlanning(const Ponto &destino)
 
 bool Agente::isPresente()
 {
-    return Sistema::modeloMundo.getRoboEq(id)->isPresente();
+    return Sistema::modeloMundo.getRoboEq(static_cast<int>(id))->isPresente();
 }
 
 void Agente::addPacoteBUS()
 {
 
     /// Analisando para aonde iremos enviar os pacotes do robo
-    switch(ConfigComunicacao::TIPO_ROBOS){
-    case REAL:
-        //mBUS->lock();
-        //bus->setPacoteRobo(id, montador.criaPacoteSerial());
-        //bus->setPacoteRobo(id, montador.createSerialMessage());
+    switch(Configuration::SYSTEM_ROBOTS_TYPE){
+    case RobotsType::REAL:
         if (isPresente()) {
-            //serial_repo_->set_robot_presence(static_cast<size_t>(id), true);
-            serial_repo_->package(static_cast<size_t>(id), montador.serial_package());
+            repository_->set_package(static_cast<size_t>(id), montador.criaPacoteSerial());
         }
-        //mBUS->unlock();
         break;
 
-    case SIMULADOR3D:
-        mBUS->lock();
-        bus->setPacoteRobo(id, montador.criaPacoteGrSim());
-        mBUS->unlock();
-        break;
-
-    case SIMULADOR2D:
-        montador.calculaVelLinear(); /// calculando a velocidade que o robo tera que ter
+    case RobotsType::SIMULATED:
+        repository_->set_packet(montador.criaPacoteGrSim());
         break;
     }
 }
 
-void Agente::limparPacote(){
+//void Agente::limparPacote(){
 
-    /// deletando o pacote do agente atual para que não seja enviado
-    mBUS->lock();
-    bus->limparPacoteRobo(id);
-    mBUS->unlock();
-}
+//    /// deletando o pacote do agente atual para que não seja enviado
+//    mBUS->lock();
+//    bus->limparPacoteRobo(id);
+//    mBUS->unlock();
+//}
 
 void Agente::setNavegador(Navegador _navegador){
     navegador = _navegador;

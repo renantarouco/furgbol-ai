@@ -1,6 +1,6 @@
 #include "ConfigComunicacao.h"
 
-TipoRobos ConfigComunicacao::TIPO_ROBOS;
+RobotsType ConfigComunicacao::TIPO_ROBOS;
 string ConfigComunicacao::DISPOSITIVO_SERIAL;
 bool ConfigComunicacao::USAR_REFEREE;
 bool ConfigComunicacao::ENVIA_MONITORADOR;
@@ -25,7 +25,7 @@ void ConfigComunicacao::load(string pathConfig){
     settings.beginGroup("COMUNICACAO");
 
     USAR_REFEREE = settings.value("usar_juiz").toBool();
-    TIPO_ROBOS = (TipoRobos)settings.value("tipo_robos").toInt();
+    TIPO_ROBOS = static_cast<RobotsType>(settings.value("tipo_robos").toInt());
     ENVIA_MONITORADOR = settings.value("envia_monitorador").toBool();
 
     /// Pacotes por segundo

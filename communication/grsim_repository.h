@@ -13,6 +13,7 @@ public:
     bool is_package_sent();
     void set_package_sent();
     grSim_Packet packet();
+    void packet(grSim_Packet);
     grSim_Robot_Command package(size_t);
     void package(size_t, grSim_Robot_Command);
 private:

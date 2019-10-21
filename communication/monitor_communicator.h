@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include <QUdpSocket>
+#include <furgbol-core/io/udp_sender.h>
 
 #include "monitor_repository.h"
 
@@ -15,9 +15,7 @@ public:
     void run();
 private:
     std::shared_ptr<MonitorRepository> repository_;
-    QHostAddress ip_;
-    unsigned short port_;
-    QUdpSocket writer_;
+    furgbol::io::UDPSender writer_;
     std::shared_ptr<bool> running_;
 };
 

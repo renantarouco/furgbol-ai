@@ -8,16 +8,14 @@ Montador::Montador(){
     velAngularAtual=0.0;
     enableChute = true;
     thetaAnterior=0.0;
-    pacoteSerial.setNivelChute(15);
-
     inicializaModeloCinematico();
-
+    //pacoteSerial.setNivelChute(15);
     //cout << "Dentro do montador id " << id <<  "******************************"<<endl;
 }
 
 void Montador::setId(int _id){
     id = _id;
-    pacoteSerial.setId(id);
+    serial_package_.robot_id(static_cast<uint8_t>(_id));
 }
 
 void Montador::inicializaModeloCinematico2014(){
@@ -26,17 +24,16 @@ void Montador::inicializaModeloCinematico2014(){
 
     /// O raio da roda é utilizado para determinar as velocidades das rodas e o raio do robo
     /// para se obter a velocidade angular do robo
-    float raioDaRoda = 0.0275;
-    //    float raio = 0.085;
-    float raioRobo = 0.080;
+    float raioDaRoda = static_cast<float>(0.0275);
+    float raioRobo = static_cast<float>(0.080);
 
 
     //--------MODELO CINEMÁTICO DO ROBO-----------
     float alpha1, alpha2;
 
     //angulos de ataque das rodas
-    alpha1 = 45.0*M_PI/180.0;   //45°
-    alpha2 = 37.0*M_PI/180.0;   //37°
+    alpha1 = static_cast<float>(45.0*M_PI/180.0);   //45°
+    alpha2 = static_cast<float>(37.0*M_PI/180.0);   //37°
 
     /// no nosso caso usamos uma mesma orientação com o sistema externo e interno.
     R = cv::Mat_<float>::eye(3,3);
@@ -48,10 +45,8 @@ void Montador::inicializaModeloCinematico2014(){
     M[1][0] =  sin(alpha1);     M[1][1] = -sin(alpha2);     M[1][2] = -sin(alpha2);      M[1][3] = sin(alpha1);
     M[2][0] = -1/raioRobo;          M[2][1] = -1/raioRobo;          M[2][2] =  -1/raioRobo;          M[2][3] = -1/raioRobo;
 
-    M = raioDaRoda * M;     //isto é feito para calcular a velocidade angular das rodas posteriormente, e não a linear
-
+    M = static_cast<double>(raioDaRoda) * M;     //isto eh feito para calcular a velocidade angular das rodas posteriormente, e nao a linear
     //calcula a matriz pseudo-inversa da matriz M
-
     /// essa matriz deve ser invertida e para isso o calculo da pseudo inversa da biblioteca open cv é realizado.
     pInvM = M.inv(cv::DECOMP_SVD);
 }
@@ -62,17 +57,16 @@ void Montador::inicializaModeloCinematico(){
 
     /// O raio da roda é utilizado para determinar as velocidades das rodas e o raio do robo
     /// para se obter a velocidade angular do robo
-    float raioDaRoda = 0.0275;
-    //    float raio = 0.085;
-    float raioRobo = 0.0825;
+    float raioDaRoda = static_cast<float>(0.0275);
+    float raioRobo = static_cast<float>(0.080);
 
 
     //--------MODELO CINEMÁTICO DO ROBO-----------
     float alpha1, alpha2;
 
     //angulos de ataque das rodas
-    alpha1 = 45.0*M_PI/180.0;   //45°
-    alpha2 = 37.0*M_PI/180.0;   //37°
+    alpha1 = static_cast<float>(45.0*M_PI/180.0);   //45°
+    alpha2 = static_cast<float>(37.0*M_PI/180.0);   //37°
 
     /// no nosso caso usamos uma mesma orientação com o sistema externo e interno.
     R = cv::Mat_<float>::eye(3,3);
@@ -85,7 +79,7 @@ void Montador::inicializaModeloCinematico(){
     M[2][0] =  cos(alpha2);     M[2][1] = -sin(alpha2);    M[2][2] = -raioRobo;
     M[3][0] =  cos(alpha1);     M[3][1] = sin(alpha1);     M[3][2] = -raioRobo;
 
-    M = (1.0/raioDaRoda) * M;     //isto é feito para calcular a velocidade angular das rodas posteriormente, e não a linear
+    M = (1.0/static_cast<double>(raioDaRoda)) * M;     //isto é feito para calcular a velocidade angular das rodas posteriormente, e não a linear
 
     //calcula a matriz pseudo-inversa da matriz M
 
@@ -94,45 +88,45 @@ void Montador::inicializaModeloCinematico(){
 }
 
 
-ProtocoloSerial Montador::criaPacoteSerial(){
-    pacoteSerial.limpaPacote();
-    Comando comando = Sistema::modeloMundo.getRoboEq(id)->getComando();
+//ProtocoloSerial Montador::criaPacoteSerial(){
+//    pacoteSerial.limpaPacote();
+//    Comando comando = Sistema::modeloMundo.getRoboEq(id)->getComando();
 
-    /// calculando a velocidade do robo
-    calculaVelLinear();
-    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
-    float x_vel = robo->getVelocidade().x();
-    float y_vel = robo->getVelocidade().y();
-    float theta_vel = robo->getVelAngular();
-    pacoteSerial.setPkgId(0);
-    pacoteSerial.setMsgType(0);
-    pacoteSerial.setId(robo->getId());
-    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< robo set id " << robo->getId() << std::endl;
-    pacoteSerial.setDirX((x_vel < 0) ? 1 : 3);
-    pacoteSerial.setDirY((y_vel < 0) ? 1 : 3);
-    pacoteSerial.setDirTheta((theta_vel < 0) ? 1 : 3);
-    pacoteSerial.setVelX(static_cast<uint8_t>(std::abs(127 * x_vel)));
-    pacoteSerial.setVelY(static_cast<uint8_t>(std::abs(127 * y_vel)));
-    pacoteSerial.setVelTheta(static_cast<uint8_t>(127 * theta_vel));
-    pacoteSerial.setKick(0);
-    pacoteSerial.setDribbler(0);
+//    /// calculando a velocidade do robo
+//    calculaVelLinear();
+//    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
+//    float x_vel = robo->getVelocidade().x();
+//    float y_vel = robo->getVelocidade().y();
+//    float theta_vel = robo->getVelAngular();
+//    pacoteSerial.setPkgId(0);
+//    pacoteSerial.setMsgType(0);
+//    pacoteSerial.setId(robo->getId());
+//    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< robo set id " << robo->getId() << std::endl;
+//    pacoteSerial.setDirX((x_vel < 0) ? 1 : 3);
+//    pacoteSerial.setDirY((y_vel < 0) ? 1 : 3);
+//    pacoteSerial.setDirTheta((theta_vel < 0) ? 1 : 3);
+//    pacoteSerial.setVelX(static_cast<uint8_t>(std::abs(127 * x_vel)));
+//    pacoteSerial.setVelY(static_cast<uint8_t>(std::abs(127 * y_vel)));
+//    pacoteSerial.setVelTheta(static_cast<uint8_t>(127 * theta_vel));
+//    pacoteSerial.setKick(0);
+//    pacoteSerial.setDribbler(0);
 
-    /// aplicando o modelo cinematico para saber a velocidade angular de cada roda
-//    calculaVelRodas();
+//    /// aplicando o modelo cinematico para saber a velocidade angular de cada roda
+////    calculaVelRodas();
 
-//    for(int i=0;i<4;i++){
-//        pacoteSerial.setVelocidadePercentualRodas(i,(char)(fabs(velRodas[i][0])/ConfigMontador::MAX_VEL_RODAS*100));
-//        pacoteSerial.setDirecaoRodas(i, velRodas[i][0] < 0 ? HORARIO : ANTI_HORARIO);
-//    }
+////    for(int i=0;i<4;i++){
+////        pacoteSerial.setVelocidadePercentualRodas(i,(char)(fabs(velRodas[i][0])/ConfigMontador::MAX_VEL_RODAS*100));
+////        pacoteSerial.setDirecaoRodas(i, velRodas[i][0] < 0 ? HORARIO : ANTI_HORARIO);
+////    }
 
-//    pacoteSerial.setDirecaoDriblador(comando.getDirecaoDrible());
-//    pacoteSerial.setEnableDrible(comando.isUsaDrible());
-//    // pacote.setVelocidadePercentualDriblador(0); mudei para linha de cima. Luan
-//    pacoteSerial.setTipoChute(comando.getTipoChute());
-//    pacoteSerial.setEnableChute(comando.getTipoChute() != Comando::SEM_CHUTE);
+////    pacoteSerial.setDirecaoDriblador(comando.getDirecaoDrible());
+////    pacoteSerial.setEnableDrible(comando.isUsaDrible());
+////    // pacote.setVelocidadePercentualDriblador(0); mudei para linha de cima. Luan
+////    pacoteSerial.setTipoChute(comando.getTipoChute());
+////    pacoteSerial.setEnableChute(comando.getTipoChute() != Comando::SEM_CHUTE);
 
-    return pacoteSerial;
-}
+//    return pacoteSerial;
+//}
 
 grSim_Packet Montador::criaPacoteGrSim(){
 
@@ -154,7 +148,7 @@ grSim_Packet Montador::criaPacoteGrSim(){
     R[0][0] = cos(orientacao);       R[0][1] = sin(orientacao);
     R[1][0] = -sin(orientacao);      R[1][1] = cos(orientacao);
 
-    //aplicação do modelo cinemático do robô
+    //aplicacao do modelo cinematico do robo
     velRobo = R*velRobo;
 
     pacoteGrSim.mutable_commands()->set_isteamyellow(Sistema::modeloMundo.isEqAmarelo());
@@ -162,7 +156,7 @@ grSim_Packet Montador::criaPacoteGrSim(){
 
     grSim_Robot_Command *comandos = pacoteGrSim.mutable_commands()->add_robot_commands();
 
-    comandos->set_id(id);
+    comandos->set_id(static_cast<google::protobuf::uint32>(id));
 
     Comando::TipoChute tipoChute = robo->getComando().getTipoChute();
 
@@ -186,6 +180,39 @@ grSim_Packet Montador::criaPacoteGrSim(){
     return pacoteGrSim;
 }
 
+grSim_Robot_Command Montador::criaPacoteRobo()
+{
+    calculaVelLinear();
+    cv::Mat_ <float> velRobo(3,1);
+    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
+    velRobo[0][0] = robo->getVelocidade().x();
+    velRobo[1][0] = robo->getVelocidade().y();
+    velRobo[2][0] = robo->getVelAngular();
+    float orientacao = robo->getOrientacao();
+    R[0][0] = cos(orientacao);       R[0][1] = sin(orientacao);
+    R[1][0] = -sin(orientacao);      R[1][1] = cos(orientacao);
+    velRobo = R*velRobo;
+    grSim_Robot_Command comandos;
+    comandos.set_id(static_cast<google::protobuf::uint32>(id));
+    Comando::TipoChute tipoChute = robo->getComando().getTipoChute();
+    if(tipoChute == Comando::SEM_CHUTE){
+        comandos.set_kickspeedx(0);
+        comandos.set_kickspeedz(0);
+    }else if(tipoChute == Comando::CHUTE_BAIXO){
+        comandos.set_kickspeedx(6);
+        comandos.set_kickspeedz(0);
+    }else if(tipoChute == Comando::CHUTE_ALTO){
+        comandos.set_kickspeedx(2);
+        comandos.set_kickspeedz(3);
+    }
+    comandos.set_wheelsspeed(false);
+    comandos.set_spinner(robo->getComando().isUsaDrible());
+    comandos.set_veltangent(velRobo[0][0]);
+    comandos.set_velnormal(velRobo[1][0]);
+    comandos.set_velangular(velRobo[2][0]);
+    return comandos;
+}
+
 void Montador::calculaVelLinear(){
     Robo * robo = Sistema::modeloMundo.getRoboEq(id);
     Comando comando = robo->getComando();
@@ -202,11 +229,11 @@ void Montador::calculaVelLinear(){
 
     /// Calcula a distancia do robo ate o proximo alvo e depois calcula o resto do
     /// caminho a partir do tamanho do segmento definido pelo Path planning
-    double distAlvo = sqrt(squared_distance(robo->getPosicao(),alvos[0]));
+    double distAlvo = static_cast<double>(sqrt(squared_distance(robo->getPosicao(),alvos[0])));
 
     /// se tiver mais de 1 alvo no path planning teremos que calcular o tamanho total dos segmentos
     if(alvos.size() > 1)
-        distAlvo += PATH_PLANNING_MAX_TAM_SEGUIMENTOS*(alvos.size()-1);
+        distAlvo += static_cast<double>(PATH_PLANNING_MAX_TAM_SEGUIMENTOS*(alvos.size()-1));
 
     distAlvo /= 1000.0; /// convertendo para metros
 
@@ -242,26 +269,26 @@ void Montador::calculaVelLinear(){
     //    {
 
     /// Equacao de Torriceli para encontrar a distancia para comecar a parar
-    double distComecarParar = (vel_atual*vel_atual - config_skill.max_vel_aprox*config_skill.max_vel_aprox)/(2.0*ConfigMontador::DESACELERACAO);
+    double distComecarParar = (vel_atual*vel_atual - static_cast<double>(config_skill.max_vel_aprox*config_skill.max_vel_aprox))/(2.0*static_cast<double>(ConfigMontador::DESACELERACAO));
 
     //    double distComecarParar = (velIteracao*velIteracao - config_skill.max_vel_aprox*config_skill.max_vel_aprox)/(2.0*ConfigMontador::desaceleracao_);
 
     //    if(robo->getId()==1)cout << "Dist Parar= " << distComecarParar << endl;
 
     if(distAlvo > distComecarParar){
-        moduloVel = vel_atual + ConfigMontador::ACELERACAO*tempoIteracao;
+        moduloVel = vel_atual + static_cast<double>(ConfigMontador::ACELERACAO)*tempoIteracao;
 
         /// Verificando se a velocidade passa da maxima velocidade linear definida
-        if(moduloVel >= config_skill.max_vel_linear){
-            moduloVel=config_skill.max_vel_linear;
+        if(moduloVel >= static_cast<double>(config_skill.max_vel_linear)){
+            moduloVel = static_cast<double>(config_skill.max_vel_linear);
         }
 
     }else {
-        moduloVel = vel_atual - ConfigMontador::DESACELERACAO*tempoIteracao;
+        moduloVel = vel_atual - static_cast<double>(ConfigMontador::DESACELERACAO)*tempoIteracao;
 
         /// Setando o modulo da velocidade caso fique menor do que a velocidade de aproximacao
-        if(moduloVel <= config_skill.max_vel_aprox){
-            moduloVel = config_skill.max_vel_aprox;
+        if(moduloVel <= static_cast<double>(config_skill.max_vel_aprox)){
+            moduloVel = static_cast<double>(config_skill.max_vel_aprox);
         }
     }
 
@@ -292,9 +319,9 @@ void Montador::calculaVelLinear(){
     float modVetorDirecao = sqrt(vetorDirecao.squared_length());
 
     /// Verificando se o modulo e diferente de zero, caso seja iremos calcular o vetor e setar o modulo nele mesmo
-    if(fabs(modVetorDirecao) > 0.001){
+    if(static_cast<double>(fabs(modVetorDirecao)) > 0.001){
         vetorDirecao = vetorDirecao/modVetorDirecao;
-        vetorDirecao = Vetor(vetorDirecao.x()*moduloVel, vetorDirecao.y()*moduloVel);
+        vetorDirecao = Vetor(static_cast<double>(vetorDirecao.x())*moduloVel, static_cast<double>(vetorDirecao.x())*moduloVel);
     }else{
         vetorDirecao = Vetor(0.0, 0.0);
     }
@@ -347,7 +374,7 @@ void Montador::calculaVelRodas(){
     //                ajustaVelocidades();
 }
 
-F180SerialPackage Montador::serial_package()
+F180SerialPackage Montador::criaPacoteSerial()
 {
     calculaVelLinear();
     Robo *robo = Sistema::modeloMundo.getRoboEq(id);
@@ -367,25 +394,3 @@ F180SerialPackage Montador::serial_package()
     serial_package_.kick(0);
     return serial_package_;
 }
-
-//furgbol::io::F180SerialMessage Montador::createSerialMessage() {
-//    calculaVelLinear();
-//    Robo *robo = Sistema::modeloMundo.getRoboEq(id);
-//    float x_vel = robo->getVelocidade().x();
-//    float y_vel = robo->getVelocidade().y();
-//    float theta_vel = robo->getVelAngular();
-//    furgbol::io::F180SerialMessage serial_message;
-//    serial_message.setPkgId(0);
-//    serial_message.setMsgType(0);
-//    serial_message.setRobotId(static_cast<uint8_t>(robo->getId()));
-//    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< robo set id " << static_cast<int>(serial_message.getRobotId()) << std::endl;
-//    serial_message.setDirectionX((x_vel < 0) ? 1 : 3);
-//    serial_message.setDirectionY((y_vel < 0) ? 1 : 3);
-//    serial_message.setDirectionTheta((theta_vel < 0) ? 1 : 3);
-//    serial_message.setVelocityX(static_cast<uint8_t>(std::abs(127 * x_vel)));
-//    serial_message.setVelocityY(static_cast<uint8_t>(std::abs(127 * y_vel)));
-//    serial_message.setVelocityTheta(static_cast<uint8_t>(127 * theta_vel));
-//    serial_message.setKick(0);
-//    serial_message.setDribbler(0);
-//    return serial_message;
-//}

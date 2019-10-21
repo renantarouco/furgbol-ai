@@ -13,6 +13,7 @@ public:
     bool is_package_sent();
     void set_package_sent();
     AIDataManagerPackage packet();
+    void packet(AIDataManagerPackage);
     AIRobotPackage package(size_t);
     void package(size_t, AIRobotPackage);
 private:

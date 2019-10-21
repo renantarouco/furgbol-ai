@@ -47,7 +47,6 @@ INCLUDEPATH += Utils \
     Agente \
     Agente/Taticas \
     Avaliador \
-    Comunicacao \
     GDC \
     Agente/Maquinas \
     Agente/Skills \
@@ -104,10 +103,6 @@ HEADERS += \
     Agente/Taticas/AndarReto.h \
     Avaliador/AvaliadorRobo.h \
     Avaliador/Avaliador.h \
-    Comunicacao/Serial.h \
-    Comunicacao/ProtocoloSerial.h \
-    Comunicacao/Comunicador.h \
-    Comunicacao/CommunicationBUS.h \
     GDC/Seletor.h \
     GDC/Jogada.h \
     GDC/GerenteDeliberativoCentral.h \
@@ -182,10 +177,6 @@ SOURCES += \
     Agente/Taticas/AndarReto.cpp \
     Avaliador/AvaliadorRobo.cpp \
     Avaliador/Avaliador.cpp \
-    Comunicacao/Serial.cpp \
-    Comunicacao/ProtocoloSerial.cpp \
-    Comunicacao/Comunicador.cpp \
-    Comunicacao/CommunicationBUS.cpp \
     GDC/Seletor.cpp \
     GDC/Jogada.cpp \
     GDC/GerenteDeliberativoCentral.cpp \
